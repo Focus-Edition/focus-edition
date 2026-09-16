@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Access to Work — Focus Edition. A short-attention, mission-based adaptation of the DWP 'Access to Work: factsheet for customers', reproduced under the Open Government Licence v3.0. Offline and self-contained.">
+<meta name="author" content="Adapted edition. Source: Department for Work and Pensions (OGL v3.0).">
+<title>Access to Work — Focus Edition</title>
+<style>/* =========================================================================
+   Focus Edition — engine styles
+   Offline, self-contained, no external assets. Emojis for icons only.
+   ========================================================================= */
+
+:root {
+  --bg: #f5f6f8;
+  --bg2: #ffffff;
+  --card: #ffffff;
+  --ink: #1c2230;
+  --mut: #5c667a;
+  --line: #e2e6ee;
+  --brand: #7c3aed;
+  --brand-ink: #ffffff;
+  --accent: #f59e0b;
+  --ok: #16a34a;
+  --ok-bg: #e9f9ee;
+  --err: #dc2626;
+  --err-bg: #fdecec;
+  --r1: #fef3c7;   /* yellow research */
+  --r1i: #7a4f00;
+  --r2: #fde2e2;   /* red caution */
+  --r2i: #9f1d1d;
+  --r3: #dbeafe;   /* blue context */
+  --r3i: #1d4ed8;
+  --r4: #ede4ff;   /* purple analogy */
+  --r4i: #5b3c9e;
+  --shadow: 0 6px 22px rgba(20,24,40,.06);
+  --rad: 16px;
+  --maxw: 900px;
+  --touches: 0;
+}
+
+[data-theme="dark"] {
+  --bg: #0f1220;
+  --bg2: #181d30;
+  --card: #1b2137;
+  --ink: #e8ebf5;
+  --mut: #9aa4bd;
+  --line: #2b3350;
+  --brand: #8b5cf6;
+  --brand-ink: #ffffff;
+  --accent: #fbbf24;
+  --ok: #34d399;
+  --ok-bg: #123627;
+  --err: #f87171;
+  --err-bg: #431a1a;
+  --r1: #3a2f10;
+  --r1i: #fcd34d;
+  --r2: #421d1d;
+  --r2i: #fca5a5;
+  --r3: #12263f;
+  --r3i: #93c5fd;
+  --r4: #2a1f45;
+  --r4i: #d6bfff;
+  --shadow: 0 6px 22px rgba(0,0,0,.35);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  font-size: 17px;
+  transition: background .25s ease, color .25s ease;
+  overflow-x: hidden;
+}
+
+/* top bar */
+.topbar {
+  position: sticky; top: 0; z-index: 40;
+  background: color-mix(in srgb, var(--bg2) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: wrap;
+}
+.topbar .brand {
+  display: flex; align-items: center; gap: 9px; flex: 1 1 auto; min-width: 0;
+}
+.topbar .logo { font-size: 22px; }
+.topbar .btitle { font-weight: 800; letter-spacing: -.01em; font-size: 17px; }
+.topbar .bsub { color: var(--mut); font-size: 12px; display: block; margin-top: -3px; }
+.topbar .controls { display: flex; align-items: center; gap: 6px; }
+.progress-track {
+  width: 100%; height: 10px; background: var(--line);
+  border-radius: 100px; overflow: hidden; flex: 1 1 100%;
+}
+.progress-fill {
+  height: 100%; width: 0%; background: linear-gradient(90deg, var(--brand), var(--accent));
+  transition: width .4s ease; border-radius: 100px;
+}
+.pct-label { color: var(--mut); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+button {
+  font: inherit; cursor: pointer; color: inherit; background: none; border: none;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 14px; border-radius: 12px; font-weight: 600;
+  background: var(--bg2); border: 1px solid var(--line); color: var(--ink);
+  transition: transform .06s ease, background .2s ease;
+}
+.btn:hover { background: var(--line); }
+.btn:active { transform: translateY(1px); }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+.btn.primary:hover { filter: brightness(1.07); background: var(--brand); }
+.btn.sm { padding: 6px 11px; font-size: 14px; }
+
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 12px; display: inline-flex;
+  align-items: center; justify-content: center; font-size: 18px;
+  background: var(--bg2); border: 1px solid var(--line);
+}
+.icon-btn:hover { background: var(--line); }
+.icon-btn[aria-pressed="true"] { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
+
+/* layout */
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 22px 16px 60px; }
+#app { min-height: 100vh; }
+main { display: block; }
+
+/* generic intent: use transform-translate for list */
+.mission, .homecard {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--rad);
+  box-shadow: var(--shadow); padding: 22px 20px; margin-bottom: 18px;
+}
+h1,h2,h3,h4 { line-height: 1.25; letter-spacing: -.01em; }
+h1 { font-size: 30px; margin: 4px 0 8px; }
+h2 { font-size: 22px; margin: 0 0 6px; }
+h3 { font-size: 18px; margin: 0 0 4px; }
+p { margin: 0 0 12px; }
+.mut { color: var(--mut); }
+.small { font-size: 13px; }
+
+.chiprow { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 4px; }
+.chip {
+  background: var(--line); border-radius: 100px; padding: 5px 11px;
+  font-size: 13px; font-weight: 600; color: var(--ink);
+}
+.mission-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 2px; }
+.meta {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 13px; color: var(--mut); font-weight: 600;
+  background: var(--line); border-radius: 100px; padding: 4px 10px;
+}
+.mission-stmt { font-style: italic; color: var(--mut); border-left: 3px solid var(--brand); padding: 2px 0 2px 12px; margin: 6px 0 12px; }
+
+/* callouts */
+.callout { border-radius: 14px; padding: 14px 16px; margin: 14px 0; border: 1px solid var(--line); }
+.callout .ctag { font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; display: block; margin-bottom: 5px; }
+.c1 { background: var(--r1); border-color: color-mix(in srgb, var(--r1i) 25%, var(--line)); }
+.c1 .ctag, .c1 strong { color: var(--r1i); }
+.c2 { background: var(--r2); border-color: color-mix(in srgb, var(--r2i) 30%, var(--line)); }
+.c2 .ctag, .c2 strong { color: var(--r2i); }
+.c3 { background: var(--r3); border-color: color-mix(in srgb, var(--r3i) 30%, var(--line)); }
+.c3 .ctag, .c3 strong { color: var(--r3i); }
+.c4 { background: var(--r4); border-color: color-mix(in srgb, var(--r4i) 30%, var(--line)); }
+.c4 .ctag, .c4 strong { color: var(--r4i); }
+
+/* stat cards */
+.statgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 14px 0; }
+.stat {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px 14px 11px; text-align: center;
+}
+.stat .num { font-size: 26px; font-weight: 800; color: var(--brand); letter-spacing: -.02em; }
+.stat .lbl { font-size: 12px; color: var(--mut); margin-top: 2px; }
+
+/* quote / pull */
+.pullquote { text-align: center; font-size: 19px; font-weight: 600; font-style: italic; margin: 18px auto; max-width: 620px; }
+.pullquote .by { display: block; font-size: 13px; color: var(--mut); font-weight: 500; font-style: normal; margin-top: 8px; }
+
+/* lists */
+.focuslist { padding-left: 0; list-style: none; margin: 12px 0; }
+.focuslist li { padding: 6px 0 6px 28px; position: relative; }
+.focuslist li::before { content: "▸"; position: absolute; left: 4px; color: var(--brand); }
+.focuslist.tick li::before { content: "✔"; color: var(--ok); }
+
+/* tables */
+.tablewrap { overflow-x: auto; margin: 14px 0; border: 1px solid var(--line); border-radius: 14px; }
+table { border-collapse: collapse; width: 100%; min-width: 480px; font-size: 15px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { background: var(--bg2); font-weight: 700; position: sticky; top: 0; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:nth-child(even) { background: color-mix(in srgb, var(--bg2) 55%, transparent); }
+
+/* visual chain */
+.chain { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; margin: 14px 0; }
+.chain .step {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 11px 13px; flex: 1 1 150px; font-weight: 600; display: flex; flex-direction: column; gap: 3px;
+}
+.chain .step .n { font-size: 12px; color: var(--mut); font-weight: 700; }
+.chain .arrow { align-self: center; font-size: 18px; color: var(--mut); }
+
+/* timeline */
+.timeline { margin: 14px 0; padding-left: 0; list-style: none; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px; width: 2px; background: var(--line); }
+.timeline li { position: relative; padding: 0 0 16px 30px; }
+.timeline li::before { content: ""; position: absolute; left: 4px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--brand); border: 2px solid var(--bg); }
+.timeline .tlabel { font-weight: 700; }
+.timeline .tdate { color: var(--mut); font-size: 13px; }
+
+/* keep-forever summary */
+.keep {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 14%, var(--card)), color-mix(in srgb, var(--accent) 12%, var(--card)));
+  border: 1px solid var(--line); border-radius: var(--rad);
+  padding: 16px 18px; margin: 16px 0;
+}
+.keep h3 { color: var(--brand); }
+
+/* rush */
+.rush { border: 1px dashed var(--brand); border-radius: 12px; padding: 10px 14px; margin: 12px 0; }
+summary { cursor: pointer; font-weight: 700; color: var(--brand); }
+
+/* quiz */
+.quiz { margin: 22px 0; }
+.quiz h3 { display: flex; align-items: center; gap: 7px; }
+.q { background: var(--bg2); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin: 12px 0; }
+.q .qtxt { font-weight: 700; margin-bottom: 10px; }
+.opt {
+  display: block; width: 100%; text-align: left; padding: 11px 13px; margin: 6px 0;
+  border-radius: 11px; border: 1px solid var(--line); background: var(--card);
+  font-weight: 500; transition: background .15s, border-color .15s;
+}
+.opt:hover { border-color: var(--brand); }
+.opt .k { display: inline-flex; width: 22px; height: 22px; border-radius: 6px; align-items: center; justify-content: center; background: var(--line); margin-right: 9px; font-size: 13px; font-weight: 700; }
+.opt.correct { border-color: var(--ok); background: var(--ok-bg); }
+.opt.correct .k { background: var(--ok); color: #fff; }
+.opt.wrong { border-color: var(--err); background: var(--err-bg); }
+.opt.wrong .k { background: var(--err); color: #fff; }
+.opt:disabled { cursor: default; opacity: .95; }
+.feedback { border-radius: 11px; padding: 11px 13px; margin-top: 10px; font-weight: 600; display: none; }
+.feedback.show { display: block; }
+.feedback.good { background: var(--ok-bg); color: var(--ok); }
+.feedback.bad { background: var(--err-bg); color: var(--err); }
+.feedback .exp { display: block; font-weight: 500; margin-top: 3px; color: var(--ink); }
+
+/* flashcards */
+.flashsection { margin: 22px 0; }
+.flashgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin-top: 12px; }
+.flashcard { perspective: 1100px; }
+.flashcard button {
+  position: relative; width: 100%; height: 150px; border-radius: 14px; border: 1px solid var(--line);
+  background: var(--bg2); transition: transform .4s; transform-style: preserve-3d; text-align: left;
+}
+.flashcard button > span { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; padding: 14px; display: flex; flex-direction: column; justify-content: center; }
+.flashcard .front { color: var(--brand); font-weight: 800; font-size: 17px; align-items: center; text-align: center; }
+.flashcard .back { transform: rotateY(180deg); color: var(--ink); font-weight: 600; font-size: 14px; }
+.flashcard button.flipped, .flashcard.flipped button { transform: rotateY(180deg); }
+.flashcard .hint { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-size: 11px; color: var(--mut); font-style: normal; font-weight: 500; }
+.flashcard .hint { backface-visibility: hidden; }
+
+/* break cards */
+.breakcard {
+  position: relative; border-radius: var(--rad); padding: 20px 18px; margin: 22px 0;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 16%, var(--card)), color-mix(in srgb, var(--brand) 16%, var(--card)));
+  border: 1px solid var(--line);
+}
+.breakcard .bhead { font-weight: 800; font-size: 19px; display: flex; gap: 8px; align-items: center; }
+.breakcard .intent { color: var(--mut); font-size: 14px; margin: 4px 0 12px; }
+.timer { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+.timer .clock { font-size: 42px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; min-width: 150px; }
+.timer .tbtns { display: flex; gap: 6px; }
+.timer .clock.done { color: var(--ok); }
+.stretch { background: var(--bg2); border-radius: 12px; padding: 11px 14px; margin: 10px 0; color: var(--mut); }
+.game-cmd { color: var(--mut); font-size: 14px; margin: 6px 0; }
+.gameboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 250px; margin: 10px 0; }
+.gamecell { aspect-ratio: 1/1; font-size: 26px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg2); }
+.gamecell.done { background: var(--ok-bg); border-color: var(--ok); }
+.gamestatus { font-weight: 700; font-size: 14px; margin-top: 6px; min-height: 20px; }
+.gamestatus .okc { color: var(--ok); }
+.gamestatus .erb { color: var(--err); }
+
+/* mission footer buttons */
+.mission-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 6px; }
+.navrow { display: flex; justify-content: space-between; gap: 10px; margin-top: 20px; }
+
+/* home */
+.home-hero { background: linear-gradient(135deg, var(--brand), #6d28d9 60%, #4c1d95); color: #fff; border-radius: var(--rad); padding: 22px 20px; margin-bottom: 18px; box-shadow: var(--shadow); }
+.home-hero h1 { color: #fff; }
+.home-hero .sub { opacity: .92; }
+.bookcard { display: block; padding: 16px 18px; }
+.bookcard .btitle2 { font-weight: 800; font-size: 18px; }
+.bookcard .bmeta { color: var(--mut); font-size: 13px; margin: 3px 0; }
+.bookcard .bdots { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.dot { width: 13px; height: 13px; border-radius: 50%; background: var(--line); border: 1px solid color-mix(in srgb, var(--mut) 30%, transparent); }
+.dot.done { background: var(--ok); border-color: var(--ok); }
+.dot.cur { outline: 2px solid var(--brand); outline-offset: 2px; }
+.bookcard:hover { border-color: var(--brand); }
+
+/* menu overlay */
+#menu {
+  position: fixed; inset: 0; z-index: 60; background: color-mix(in srgb, var(--bg) 30%, transparent);
+  backdrop-filter: blur(4px); display: none; overflow-y: auto; padding: 20px 16px;
+}
+#menu.open { display: block; }
+.menu-panel { max-width: 720px; margin: 0 auto; background: var(--card); border: 1px solid var(--line); border-radius: var(--rad); padding: 18px 18px 24px; box-shadow: var(--shadow); }
+.menu-panel h2 { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.menulist { margin-top: 8px; }
+.mchapter { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; width: 100%; text-align: left; }
+.mchapter:hover { background: var(--line); }
+.mchapter .mnum { width: 26px; height: 26px; border-radius: 8px; background: var(--line); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex: 0 0 auto; }
+.mchapter.cur .mnum { background: var(--brand); color: var(--brand-ink); }
+.mchapter .mtitle { flex: 1 1 auto; font-weight: 600; }
+.mchapter .mdone { color: var(--ok); }
+
+/* confetti canvas */
+#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 80; }
+
+/* certificate */
+.cert { border: 2px solid var(--brand); border-radius: var(--rad); padding: 26px 22px; text-align: center; background: var(--card); margin: 18px 0; }
+.cert .cbig { font-weight: 800; font-size: 22px; letter-spacing: .02em; }
+.cert .name { font-size: 22px; margin: 14px auto; font-style: italic; }
+.cert .name input { font: inherit; text-align: center; border: none; border-bottom: 2px dashed var(--brand); background: transparent; color: var(--brand); width: 100%; max-width: 360px; font-weight: 800; }
+.cert .name input:focus { outline: none; border-bottom-color: var(--brand); }
+.cert small { color: var(--mut); }
+
+/* toast */
+#toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--card); border: 1px solid var(--line); padding: 12px 18px; border-radius: 100px; box-shadow: var(--shadow); z-index: 70; opacity: 0; pointer-events: none; transition: opacity .3s; }
+#toast.show { opacity: 1; }
+
+/* skip link + focus */
+.skip { position: absolute; left: -9999px; top: 0; z-index: 100; background: var(--card); color: var(--ink); padding: 10px 14px; border-radius: 0 0 10px 0; }
+.skip:focus { left: 0; }
+a { color: var(--brand); }
+:focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .wrap { padding: 16px 12px 50px; }
+  h1 { font-size: 25px; }
+  .topbar { padding: 8px 10px; }
+  .gameboard { max-width: 100%; grid-template-columns: repeat(3,1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .flashcard button, .flashcard button > span { transition: none !important; }
+}
+
+/* ======= PRINT ======= */
+@media print {
+  @page { margin: 14mm; }
+  body { background: #fff; color: #000; font-size: 12pt; overflow-x: visible; }
+  * { box-shadow: none !important; }
+  .topbar, .no-print, #menu, #confetti, #toast, .mission-actions, .navrow, .js-only,
+  .chr, .timer .tbtns, .opt, .btn, .icon-btn { display: none !important; }
+  .topbar { display: none !important; }
+  .wrap { max-width: 100%; padding: 0; }
+  .mission, .homecard, .bookcard { border: 1px solid #000 !important; box-shadow: none; break-inside: avoid; }
+  /* reveal flashcards */
+  .flashcard button { transform: none !important; height: auto; min-height: 0; border: 1px solid #999; }
+  .flashcard button > span { position: static; transform: none !important; backface-visibility: visible !important; }
+  .flashcard .back { display: block !important; transform: none !important; }
+  .flashcard .front { display: block !important; }
+  .flashcard .hint { display: none !important; }
+  .flashcard .back .flipdivider { display: block !important; }
+  /* reveal quiz answers */
+  .quiz .opt { display: block !important; }
+  .quiz .opt .flipanswer { display: inline !important; }
+  .quiz .opt[data-correct="1"] { border-color: #16a34a !important; background: #e9f9ee !important; }
+  .quiz .opt[data-correct="1"] .k { background: #16a34a !important; color: #fff !important; }
+  .quiz .feedback { display: none !important; }
+  /* flipcard internal - show both faces stacked */
+  .flashcard button { display: block; }
+  .flashcard button > span { position: relative; inset: auto; height: auto; }
+  /* callouts print in color */
+  .c1 { background: #fff7dd; }
+  .c2 { background: #ffeaea; }
+  .c3 { background: #eaf3ff; }
+  .c4 { background: #f1eaff; }
+  .home-hero { background: #4c1d95 !important; color: #fff !important; }
+  a { color: #4c1d95; }
+  .breakcard { border: 1px dashed #000; }
+  .cert { border-color: #000; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#app">Skip to content</a>
+<div id="app" role="main"></div>
+<div id="menu" role="dialog" aria-modal="true" aria-label="Mission menu"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+/* ============================================================================
+   Access to Work — Focus Edition
+   Source: "Access to Work: factsheet for customers", Department for Work and
+   Pensions, GOV.UK. Licensed under the Open Government Licence v3.0.
+   https://www.gov.uk/government/publications/access-to-work-factsheet/access-to-work-factsheet-for-customers
+
+   ADAPTATION NOTICE: This is a restructured, abridged adaptation of the source
+   document. Content has been re-organised into short missions, reworded for
+   readability, and given quizzes and flashcards. No factual claims have been
+   added that are not in the source. It is not an official DWP publication and
+   is not endorsed by DWP or the UK Government.
+
+   Contains public sector information licensed under the Open Government
+   Licence v3.0.
+   ============================================================================ */
+
+BOOKS = [
+{
+  id: "atw",
+  title: "Access to Work",
+  author: "Department for Work and Pensions",
+  volume: "Focus Edition",
+  emoji: "🧭",
+  tagline: "A government grant that can pay for the support you need at work",
+  intro: "The DWP factsheet, re-cut into 13 short missions. Access to Work is a publicly funded grant for disabled people and people with health conditions — including ADHD. It can pay for equipment, travel, coaching, and mental health support at work. This edition is an adaptation of the official GOV.UK factsheet, which is published under the Open Government Licence v3.0.",
+  missions: [
+
+  /* ---------------------------------------------------------------- 1 */
+  {
+    id: "atw-what",
+    num: "Mission 1",
+    title: "What Access to Work actually is",
+    est: "4 min",
+    mission: "Access to Work is a government grant that pays for practical support so you can start work, stay in work, or move into self-employment.",
+    chips: ["Publicly funded grant", "Never paid back", "Doesn't affect benefits", "Physical or mental health"],
+    rush: "Access to Work is a publicly funded employment support programme. It gives grants for practical support if you have a disability or a physical or mental health condition. The money does not have to be paid back, and it will not affect your other benefits.",
+    sections: [
+      {t:"callout", kind:"context", html:"<strong>Access to Work</strong> is a publicly funded employment support programme. Its aim is to help more disabled people start or stay in work. It can provide <strong>practical and financial support</strong> if you have a disability or a physical or mental health condition."},
+      {t:"h", level:2, html:"The three things a grant can help you do"},
+      {t:"list", tick:true, items:[
+        "Start working",
+        "Stay in work",
+        "Move into self-employment or start a business"
+      ]},
+      {t:"callout", kind:"caution", html:"The grant is <strong>not</strong> for business start-up costs. Moving into self-employment is covered — paying to set the business up is not."},
+      {t:"h", level:2, html:"Three things that matter straight away"},
+      {t:"stat", items:[
+        ["£0", "to pay back — it is a grant, not a loan"],
+        ["£0", "impact on your other benefits"],
+        ["16+", "the minimum age to apply"]
+      ]},
+      {t:"p", html:"How much you get depends on your circumstances. The money does not have to be paid back, and it will not affect your other benefits."},
+      {t:"callout", kind:"context", html:"Access to Work covers <strong>England, Scotland and Wales</strong>. It does not cover the Channel Islands or the Isle of Man, and there is a different service in Northern Ireland."},
+      {t:"callout", kind:"analogy", html:"Think of it less as a benefit and more as <strong>equipment funding</strong>. The programme exists to remove the barriers between you and doing your job — and it stays focused on that one job."}
+    ],
+    quiz: [
+      {q:"What kind of support is Access to Work?", opts:["A loan you repay monthly","A publicly funded grant you do not pay back","A benefit that replaces your wages","A business start-up fund"], a:1, exp:"It is a publicly funded employment support programme. The money does not have to be paid back and will not affect your other benefits."},
+      {q:"Which of these can an Access to Work grant help you do?", opts:["Only stay in an existing job","Start working, stay in work, or move into self-employment","Only move into self-employment","Only train for a new career"], a:1, exp:"It can help you start working, stay in work, or move into self-employment or start a business."},
+      {q:"Does the grant cover business start-up costs?", opts:["Yes, that is its main purpose","Yes, but only for the first year","No — it is not for business start-up costs","Only if you are already self-employed"], a:2, exp:"The factsheet is explicit: the grant is not for business start-up costs. It can support you in self-employment, but it does not fund setting the business up."},
+      {q:"Which parts of the UK does Access to Work cover?", opts:["England, Scotland and Wales","The whole of the UK including Northern Ireland","England only","England and Wales only"], a:0, exp:"It covers England, Scotland and Wales. The Channel Islands and Isle of Man are not covered, and Northern Ireland has a different service."}
+    ],
+    flash: [
+      {t:"Access to Work", d:"A publicly funded employment support programme giving practical and financial support to disabled people and people with health conditions."},
+      {t:"Grant", d:"Money that does not have to be paid back — as opposed to a loan."},
+      {t:"What it is not for", d:"Business start-up costs. It supports you in self-employment, but does not fund setting the business up."},
+      {t:"Minimum age", d:"16."}
+    ],
+    keep: "Access to Work is a publicly funded grant — not a loan — for disabled people and people with health conditions, aimed at helping you start work, stay in work, or move into self-employment. It never has to be paid back and will not affect your other benefits. It covers England, Scotland and Wales. The one thing it will not fund is business start-up costs."
+  },
+
+  /* ---------------------------------------------------------------- 2 */
+  {
+    id: "atw-pays",
+    num: "Mission 2",
+    title: "What it can pay for",
+    est: "5 min",
+    mission: "Equipment, adaptations, travel, interview help, a job coach, note takers — and a dedicated support plan if you have a mental health condition.",
+    chips: ["Equipment & adaptations", "Travel costs", "Job coach", "Mental health support plan"],
+    rush: "Access to Work covers equipment and adaptations, extra travel costs, interview support, and practical help at work like a job coach or note taker. If you have a mental health condition, you will be offered help to develop a support plan — which can include flexible hours, a mentor, extra time on tasks, and a phased return to work.",
+    sections: [
+      {t:"h", level:2, html:"The main things it pays for"},
+      {t:"list", tick:true, items:[
+        "<strong>Aid and equipment</strong> in your workplace",
+        "<strong>Adapting equipment</strong> to make it easier for you to use",
+        "<strong>Extra travel costs</strong> to and from work, if you cannot use available public transport — or help adapting your vehicle",
+        "<strong>An interpreter</strong> or other support at a job interview if you have difficulty communicating",
+        "<strong>Other practical help at work</strong> — such as a job coach, a note taker or a lip speaker"
+      ]},
+      {t:"callout", kind:"caution", html:"You may need to give proof of costs — for example, taxi fares. Keep receipts."},
+      {t:"h", level:2, html:"If you have a mental health condition: the support plan"},
+      {t:"p", html:"If you have a mental health condition, you will be <strong>offered assistance to develop a support plan</strong>. This may include steps to support you going into work, staying in work, or returning to work — plus suggestions for reasonable adjustments in the workplace."},
+      {t:"h", level:3, html:"What a support plan can include"},
+      {t:"list", items:[
+        "Flexible working patterns to accommodate changes in mood and the impact of medication",
+        "Providing a mentor to give you additional support at work",
+        "Giving you additional time to complete certain tasks",
+        "Providing you with additional training",
+        "Regular meetings between you and your manager to talk about your concerns",
+        "A phased return to work — such as reduced hours or fewer days"
+      ]},
+      {t:"h", level:2, html:"Flexible and hybrid working"},
+      {t:"p", html:"Access to Work can be used for flexible working arrangements, such as hybrid working. This could include support to work from <strong>more than one location</strong>, and support for working at home for all or part of your time."},
+      {t:"callout", kind:"context", html:"Access to Work partners will also work with your employer to advise them how best they can support you in the workplace."},
+      {t:"callout", kind:"analogy", html:"Notice how many of these are <strong>environment changes, not personal ones</strong>. Extra time on a task, a quieter setup, clearer instructions — the grant is fixing the conditions around you, not asking you to try harder."}
+    ],
+    quiz: [
+      {q:"Which of these can an Access to Work grant pay for at a job interview?", opts:["Interview coaching for the employer","An interpreter or other communication support","A guaranteed job offer","Travel for your family"], a:1, exp:"It can pay for an interpreter or other support at a job interview if you have difficulty communicating."},
+      {q:"If you have a mental health condition, what is offered?", opts:["Medication advice","Assistance to develop a support plan","A replacement for therapy","A diagnosis"], a:1, exp:"You will be offered assistance to develop a support plan, which can include workplace adjustment suggestions."},
+      {q:"Which of these is an example of support plan assistance?", opts:["A phased return to work, such as reduced hours","Free private healthcare","A pay rise","A permanent change of career"], a:0, exp:"Examples listed include flexible working patterns, a mentor, extra time on tasks, extra training, regular manager meetings, and a phased return to work."},
+      {q:"Can Access to Work be used for hybrid working?", opts:["No, only for a fixed workplace","Yes — support for working at more than one location or at home","Only if your employer refuses","Only for self-employed people"], a:1, exp:"Access to Work can be used for flexible working arrangements such as hybrid working, including support to work from more than one location or at home."}
+    ],
+    flash: [
+      {t:"Support plan", d:"Offered if you have a mental health condition. Steps to support you going into, staying in, or returning to work, plus suggested workplace adjustments."},
+      {t:"Job coach", d:"Practical help at work provided through the grant — analyses a role and shows you how to do each task efficiently, safely and logically."},
+      {t:"Note taker / lip speaker", d:"Examples of practical help at work the grant can fund."},
+      {t:"Proof of costs", d:"You may need to provide evidence of what you spent — for example taxi fares."}
+    ],
+    keep: "The grant pays for equipment and adaptations, extra travel costs, interview communication support, and practical help at work such as a job coach or note taker. If you have a mental health condition, you will be offered help to build a support plan — which can cover flexible hours, a mentor, extra time on tasks, extra training, and a phased return to work. Hybrid and flexible working are covered too."
+  },
+
+  /* ---------------------------------------------------------------- 3 */
+  {
+    id: "atw-notpays",
+    num: "Mission 3",
+    title: "What it will NOT pay for",
+    est: "3 min",
+    mission: "Two hard limits: reasonable adjustments are the employer's legal duty, and the grant never funds starting a business.",
+    chips: ["Not reasonable adjustments", "Employer's legal duty", "Not business start-up", "It advises your employer"],
+    rush: "Access to Work will not pay for reasonable adjustments — those are changes your employer is legally required to make. It also will not fund business start-up costs. Where an adjustment should be the employer's responsibility, Access to Work will advise your employer of that.",
+    sections: [
+      {t:"callout", kind:"caution", html:"Access to Work will <strong>not pay for reasonable adjustments</strong>. These are the changes your employer must legally make to support you to do your job."},
+      {t:"p", html:"That is not the end of the story, though. Access to Work <strong>will advise your employer</strong> if changes should be made as reasonable adjustments. So the programme can still be the thing that triggers your employer doing its part."},
+      {t:"h", level:2, html:"The other hard limit"},
+      {t:"p", html:"The grant is <strong>not for business start-up costs</strong>. It can support you in self-employment, but it will not pay for setting the business up."},
+      {t:"h", level:2, html:"How the two things relate"},
+      {t:"table", head:["Cost", "Who pays"], rows:[
+        ["Reasonable adjustments", "Your employer — it is their legal duty"],
+        ["Support beyond that", "Access to Work, as a grant"],
+        ["Business start-up costs", "Nobody — Access to Work excludes it"]
+      ]},
+      {t:"callout", kind:"context", html:"The dividing line is <strong>\"above and beyond\"</strong>. Access to Work support complements an employer's legal duty — it does not replace or subsidise it."},
+      {t:"callout", kind:"analogy", html:"Think of it as two pockets. The employer's pocket pays for what the law requires. Access to Work's pocket pays for the extra. Knowing which pocket a cost belongs to is the whole skill here."}
+    ],
+    quiz: [
+      {q:"Will Access to Work pay for reasonable adjustments?", opts:["Yes, that is its main purpose","No — they are the employer's legal duty","Only for small employers","Only for the first year"], a:1, exp:"Access to Work will not pay for reasonable adjustments, which are changes the employer must legally make."},
+      {q:"What will Access to Work do about reasonable adjustments?", opts:["Ignore them","Advise your employer that they should be made","Pay for half","Refer you to a solicitor"], a:1, exp:"Access to Work will advise your employer if changes should be made as reasonable adjustments."},
+      {q:"Does the grant cover business start-up costs?", opts:["Yes, if you are self-employed","No — it is not for business start-up costs","Only for equipment","Yes, up to the annual cap"], a:1, exp:"The grant is not for business start-up costs, even though it can support you once you are self-employed."}
+    ],
+    flash: [
+      {t:"Reasonable adjustments", d:"Changes an employer must legally make to support a disabled employee to do their job. Access to Work does not fund these."},
+      {t:"The \"above and beyond\" rule", d:"Access to Work complements but does not replace or subsidise an employer's legal duty."},
+      {t:"Business start-up costs", d:"Explicitly excluded from the grant."}
+    ],
+    keep: "Two hard limits. Access to Work will not pay for reasonable adjustments — those are your employer's legal duty, and the programme will instead advise your employer to make them. And it will not fund business start-up costs. The dividing line is that Access to Work pays for support above and beyond what an employer is legally required to provide."
+  },
+
+  /* ---------------------------------------------------------------- 4 */
+  {
+    id: "atw-who",
+    num: "Mission 4",
+    title: "Who can apply",
+    est: "5 min",
+    mission: "You need to be 16+, normally resident and working in Great Britain, and have a condition that means you need support to do your job — and you must be working, about to start, or have an interview.",
+    chips: ["16 or over", "Great Britain", "Paid work required", "Or about to start"],
+    rush: "You can apply if you are 16 or over, normally resident in and working in Great Britain, and have a disability or health condition that means you need an aid, adaptation or financial or human support to do your job — or a mental health condition and need support in work. You must also already be doing paid work, be about to start, have an interview, or be starting a work trial.",
+    sections: [
+      {t:"h", level:2, html:"The four eligibility conditions"},
+      {t:"p", html:"You can apply for Access to Work if you:"},
+      {t:"list", tick:true, items:[
+        "are normally resident in, and working in, Great Britain",
+        "have a disability or health condition that means you need an aid, adaptation or financial or human support to do your job",
+        "have a mental health condition and need support in work",
+        "are aged 16 or over"
+      ]},
+      {t:"h", level:2, html:"And you must also be in one of these situations"},
+      {t:"list", tick:true, items:[
+        "already be doing paid work",
+        "be about to start work or become self-employed",
+        "have an interview for a job",
+        "be about to begin a work trial or start work experience under the Youth Contract arranged through Jobcentre Plus"
+      ]},
+      {t:"callout", kind:"context", html:"You may also get it if you are getting <strong>New Enterprise Allowance</strong>."},
+      {t:"h", level:2, html:"Two exceptions worth knowing"},
+      {t:"callout", kind:"caution", html:"If you are a <strong>civil servant</strong>, your employer will provide support instead of Access to Work. Contact them directly to arrange this."},
+      {t:"p", html:"Access to Work covers England, Scotland and Wales. The Channel Islands and the Isle of Man are not covered, and there is a different service in Northern Ireland."},
+      {t:"h", level:2, html:"Universal Credit"},
+      {t:"p", html:"Universal Credit is a single benefit paid to those in or out of employment. If you are claiming Universal Credit and have a disability or health condition, you will be able to apply for Access to Work for <strong>any paid work you do</strong>."},
+      {t:"h", level:2, html:"Benefits that may affect eligibility"},
+      {t:"p", html:"You might not get Access to Work if you get any of these:"},
+      {t:"list", items:["Incapacity Benefit","legacy Employment Support Allowance","Severe Disablement Allowance","National Insurance credits"]},
+      {t:"p", html:"However, you may get it for a limited time if you are doing certain types of <strong>'permitted work'</strong> to help you move off benefits completely."}
+    ],
+    quiz: [
+      {q:"What is the minimum age to apply for Access to Work?", opts:["16","18","21","There is no minimum"], a:0, exp:"You must be aged 16 or over."},
+      {q:"Which of these counts as a qualifying situation?", opts:["Being a full-time student","Having an interview for a job","Doing voluntary work","Being retired"], a:1, exp:"You must already be doing paid work, be about to start, have an interview for a job, or be starting a work trial or supported work experience."},
+      {q:"If you are a civil servant, how do you get support?", opts:["Apply to Access to Work as normal","Your employer provides support instead — contact them directly","You are not eligible for any support","Apply through your union"], a:1, exp:"If you are a civil servant, your employer will provide support instead of Access to Work. Contact them directly to arrange it."},
+      {q:"What does the guidance say about Universal Credit claimants?", opts:["They cannot apply","They can apply for Access to Work for any paid work they do","They must wait six months","They get a reduced grant"], a:1, exp:"If you claim Universal Credit and have a disability or health condition, you will be able to apply for Access to Work for any paid work you do."}
+    ],
+    flash: [
+      {t:"The four conditions", d:"Normally resident and working in Great Britain; a condition needing support to do your job; 16 or over. Plus being in a qualifying work situation."},
+      {t:"Civil servants", d:"Their employer provides support instead of Access to Work — they should contact their employer directly."},
+      {t:"Permitted work", d:"Certain types of work that can let you get Access to Work for a limited time while moving off benefits."},
+      {t:"Geographic cover", d:"England, Scotland and Wales. Not the Channel Islands or Isle of Man. Different service in Northern Ireland."}
+    ],
+    keep: "You can apply if you are 16 or over, normally resident and working in Great Britain, and have a disability or health condition that means you need support to do your job — or a mental health condition needing support in work. You must also already be working, about to start, have an interview, or be starting a work trial. Civil servants get support from their employer instead. Special rules apply if you receive certain legacy benefits."
+  },
+
+  /* ---------------------------------------------------------------- 5 */
+  {
+    id: "atw-condition",
+    num: "Mission 5",
+    title: "Your condition",
+    est: "4 min",
+    mission: "The test is not the diagnosis — it is whether you need support to do your job. For mental health, it must affect your ability to work.",
+    chips: ["Support needed, not diagnosis", "Mental health counts", "Three work outcomes", "Practical test"],
+    rush: "To get support you must have a disability or health condition that means you need an aid, adaptation or financial or human support to do a job. For a mental health condition, it must affect your ability to do a job and mean you need support to start a new job, reduce absence from work, or stay in work.",
+    sections: [
+      {t:"callout", kind:"context", html:"The requirement is practical, not diagnostic. You must have a disability or health condition that means you need <strong>an aid, adaptation or financial or human support</strong> to do a job — for example special computer equipment, or travel costs because you cannot use public transport."},
+      {t:"h", level:2, html:"If your condition is a mental health condition"},
+      {t:"p", html:"Your mental health condition must affect your ability to do a job. It must also mean you need support to:"},
+      {t:"list", tick:true, items:[
+        "start a new job",
+        "reduce absence from work",
+        "stay in work"
+      ]},
+      {t:"callout", kind:"analogy", html:"Notice what is <strong>not</strong> in this list: you are not asked to prove how severe your condition is, or to compare it to anyone else's. The question is narrower and much more practical — <strong>what support do you need, and will it help you do the job?</strong>"},
+      {t:"h", level:2, html:"Why this framing matters"},
+      {t:"p", html:"Because the requirement is about support rather than severity, the useful thing to prepare is not a medical case. It is a clear description of the barrier and the thing that would remove it."},
+      {t:"table", head:["Instead of…", "Think…"], rows:[
+        ["\"My condition is bad enough\"", "\"Here is the barrier in my job\""],
+        ["\"I need help\"", "\"Here is the specific support that removes it\""],
+        ["\"It is a serious diagnosis\"", "\"Here is what it stops me doing at work\""]
+      ]}
+    ],
+    quiz: [
+      {q:"What must your condition mean in order to qualify?", opts:["That you have a formal diagnosis","That you need an aid, adaptation or financial or human support to do a job","That you are unable to work","That you have been off sick"], a:1, exp:"You must have a disability or health condition that means you need an aid, adaptation or financial or human support to do your job."},
+      {q:"For a mental health condition, which of these is a qualifying purpose?", opts:["Starting a new job","Getting a promotion","Changing career entirely","Retiring early"], a:0, exp:"Your condition must mean you need support to start a new job, reduce absence from work, or stay in work."},
+      {q:"Which is the best way to describe your need?", opts:["\"My condition is very serious\"","\"Here is the barrier in my job and the support that removes it\"","\"I have a diagnosis letter\"","\"My doctor says I need help\""], a:1, exp:"The requirement is about the support you need to do a job, so the practical description — barrier plus solution — is the useful one."}
+    ],
+    flash: [
+      {t:"The condition test", d:"A disability or health condition meaning you need an aid, adaptation, or financial or human support to do a job."},
+      {t:"The three work outcomes (mental health)", d:"Support to start a new job, reduce absence from work, or stay in work."},
+      {t:"Examples of support", d:"Special computer equipment; travel costs because you cannot use public transport."}
+    ],
+    keep: "The test is practical, not diagnostic. You need a disability or health condition that means you need an aid, adaptation, or financial or human support to do your job. If it is a mental health condition, it must affect your ability to work and mean you need support to start a new job, reduce absence, or stay in work. So prepare the barrier and the support that removes it — not a case about severity."
+  },
+
+  /* ---------------------------------------------------------------- 6 */
+  {
+    id: "atw-employment",
+    num: "Mission 6",
+    title: "What counts as paid work",
+    est: "5 min",
+    mission: "Employment means full or part-time paid work of any kind, a Jobcentre work trial, or some elected roles. It excludes volunteering and most training.",
+    chips: ["Paid work of any kind", "Contract required", "National Minimum Wage", "Not volunteering"],
+    rush: "For Access to Work purposes, employment means full or part-time paid work whether permanent, casual or temporary, a work trial arranged by Jobcentre Plus, unsupported or supported work, and some councillor and elected official positions. It excludes volunteering and training other than training related to your current paid job. You must have a contract of employment and be paid at least the National Minimum Wage.",
+    sections: [
+      {t:"h", level:2, html:"Employment means"},
+      {t:"list", tick:true, items:[
+        "full or part-time paid work, whether permanent, casual or temporary",
+        "a work trial arranged by Jobcentre Plus",
+        "work in an unsupported or supported environment",
+        "some councillor and other elected official positions"
+      ]},
+      {t:"h", level:2, html:"Employment does not mean"},
+      {t:"list", items:[
+        "volunteering",
+        "training — except training related to your current paid job and done while you are receiving your normal wages"
+      ]},
+      {t:"callout", kind:"caution", html:"To be eligible if you are employed, you must have a <strong>contract of employment</strong> and be paid at least the <strong>National Minimum Wage</strong>."},
+      {t:"h", level:2, html:"What you can apply with"},
+      {t:"p", html:"You can also apply if you have:"},
+      {t:"list", items:["a job offer letter","a job start date","a letter confirming your interview"]},
+      {t:"p", html:"Access to Work can help provide you with someone to help at a job interview. If you are registered with an agency, you must have a job to start before you can be eligible for support."},
+      {t:"h", level:2, html:"Two special cases"},
+      {t:"callout", kind:"context", html:"<strong>Civil Service and government agency employees:</strong> if you are employed by ministerial government departments, including the Department for Work and Pensions or one of its agencies, your department will pay for your support."},
+      {t:"callout", kind:"context", html:"<strong>Members of the clergy:</strong> no matter what religious denomination, you must be in paid employment. For example, Church of England clergy receive a salary or stipend, while some other religious denominations work in a different way."},
+      {t:"callout", kind:"analogy", html:"The rule underneath all of this is <strong>\"a real job, paid at least the minimum wage\"</strong>. Casual is fine. Temporary is fine. Part-time is fine. Unpaid is the line."}
+    ],
+    quiz: [
+      {q:"Which of these counts as employment for Access to Work?", opts:["Volunteering","Casual or temporary paid work","Unpaid training","A job you have applied for but not been offered"], a:1, exp:"Full or part-time paid work counts whether it is permanent, casual or temporary."},
+      {q:"Does volunteering qualify?", opts:["Yes, if it is regular","Yes, if you are disabled","No — volunteering is not employment for this purpose","Only for clergy"], a:2, exp:"The guidance lists volunteering under what employment does not mean for Access to Work purposes."},
+      {q:"What two conditions must you meet if you are employed?", opts:["Full-time hours and a permanent contract","A contract of employment and pay of at least the National Minimum Wage","A union membership and a manager's reference","A year of service and a diagnosis"], a:1, exp:"You must have a contract of employment and be paid at least the National Minimum Wage."},
+      {q:"If you are registered with an agency, when are you eligible?", opts:["As soon as you register","You must have a job to start","After three placements","Never"], a:1, exp:"If you are registered with an agency, you must have a job to start before you can be eligible for support."}
+    ],
+    flash: [
+      {t:"Employment (for AtW)", d:"Full or part-time paid work, permanent, casual or temporary; a Jobcentre Plus work trial; supported or unsupported work; some elected official roles."},
+      {t:"Two employment conditions", d:"A contract of employment, and pay of at least the National Minimum Wage."},
+      {t:"Training exception", d:"Training counts only if it relates to your current paid job and you are receiving your normal wages while doing it."},
+      {t:"Alternative proofs", d:"A job offer letter, a job start date, or a letter confirming your interview."}
+    ],
+    keep: "Employment means paid work of any kind — full or part-time, permanent, casual or temporary — plus Jobcentre Plus work trials, supported or unsupported work, and some elected roles. It excludes volunteering and most training. You need a contract and at least the National Minimum Wage. You can also apply with a job offer letter, a start date, or an interview confirmation. Agency workers need a job to start."
+  },
+
+  /* ---------------------------------------------------------------- 7 */
+  {
+    id: "atw-self",
+    num: "Mission 7",
+    title: "Self-employment and directors",
+    est: "5 min",
+    mission: "Self-employment needs a UTR number and at least £6,500 annual turnover, plus accounts or a business plan. Company directors can apply too.",
+    chips: ["UTR number", "£6,500 turnover", "Accounts or business plan", "Directors qualify"],
+    rush: "Self-employment for Access to Work means operating a business on your own account or in partnership, working self-employed for an employer, or running a franchise self-employed — and you must have a Unique Tax Reference number. You need annual turnover of at least £6,500, and must provide accounts or a business plan. Company directors can apply if the company is registered with Companies House in Cardiff.",
+    sections: [
+      {t:"h", level:2, html:"Self-employment means"},
+      {t:"list", tick:true, items:[
+        "operating a business either on your own account or in partnership, or working for an employer on a self-employed basis",
+        "operating a franchised business on a self-employed basis",
+        "possessing a Unique Tax Reference (UTR) number"
+      ]},
+      {t:"callout", kind:"caution", html:"You must have an annual turnover of <strong>at least £6,500</strong>."},
+      {t:"h", level:2, html:"You must provide one of these"},
+      {t:"list", items:[
+        "accounts for an established business",
+        "a business plan that meets the standards of a bank or financial institution, if you are starting a new business"
+      ]},
+      {t:"p", html:"In the case of self-employed applicants such as entertainers who do not necessarily see themselves as being a business, then a <strong>UTR and CV</strong> would be appropriate. This will help your case manager in determining whether the business is, or is likely to become, a viable business and therefore eligible for Access to Work support."},
+      {t:"callout", kind:"context", html:"You can still apply even if you do not pay National Insurance — for example because your business is making a loss, or you have reached State Pension age."},
+      {t:"h", level:2, html:"What the grant will not fund here"},
+      {t:"p", html:"Access to Work cannot pay for the costs of setting up a business or cover costs while the business is being formed. This includes, but is not limited to:"},
+      {t:"list", items:["standard items of equipment","support for fact-finding","attending courses, seminars or similar events"]},
+      {t:"h", level:2, html:"Company directors"},
+      {t:"p", html:"If you are a company director, you can apply to get Access to Work support. However, you must prove that your company is registered with <strong>Companies House in Cardiff</strong>."},
+      {t:"callout", kind:"analogy", html:"The pattern across all of this: the grant wants evidence that <strong>the work is real and ongoing</strong>. A UTR, turnover, accounts, a business plan, a Companies House registration — each one is a way of showing the business genuinely trades."}
+    ],
+    quiz: [
+      {q:"What is the minimum annual turnover for self-employed applicants?", opts:["£1,000","£6,500","£12,000","There is no minimum"], a:1, exp:"You must have an annual turnover of at least £6,500."},
+      {q:"Which identifier must a self-employed applicant possess?", opts:["A National Insurance number only","A Unique Tax Reference (UTR) number","A VAT number","A Companies House number"], a:1, exp:"Self-employment for Access to Work purposes includes possessing a Unique Tax Reference (UTR) number."},
+      {q:"What must a new business provide instead of accounts?", opts:["A bank statement","A business plan meeting bank or financial institution standards","A letter from an accountant","Nothing"], a:1, exp:"You must provide either accounts for an established business, or a business plan that meets the standards of a bank or financial institution if you are starting a new business."},
+      {q:"What must a company director prove?", opts:["That they own 51% of the company","That the company is registered with Companies House in Cardiff","That the company has employees","That they are the sole director"], a:1, exp:"Company directors can apply but must prove their company is registered with Companies House in Cardiff."}
+    ],
+    flash: [
+      {t:"Self-employment (for AtW)", d:"Operating a business on your own account or in partnership, working self-employed for an employer, or running a franchise self-employed — plus holding a UTR number."},
+      {t:"Turnover threshold", d:"At least £6,500 a year."},
+      {t:"Proof required", d:"Accounts (established business) or a bank-standard business plan (new business). Entertainers may use a UTR and CV."},
+      {t:"Excluded start-up costs", d:"Standard equipment, fact-finding support, and attending courses or seminars."}
+    ],
+    keep: "Self-employment counts if you operate a business on your own account or in partnership, work self-employed for an employer, or run a franchise self-employed — and you must hold a UTR number. You need at least £6,500 annual turnover and must supply accounts or a bank-standard business plan. You can apply even if you pay no National Insurance. Company directors qualify if registered with Companies House in Cardiff. Start-up costs are never funded."
+  },
+
+  /* ---------------------------------------------------------------- 8 */
+  {
+    id: "atw-amount",
+    num: "Mission 8",
+    title: "How much you can get",
+    est: "4 min",
+    mission: "There is no set amount — it depends on your case. Grants awarded since April 2026 are capped at £69,260 a year.",
+    chips: ["No set amount", "Case by case", "£69,260 cap", "Cap depends on award date"],
+    rush: "There is no set amount for an Access to Work grant. How much you get depends on your specific case, and the grant only covers the support needed to let you stay in work or self-employed. Grants awarded on or after 1 October 2015 are capped, and the cap depends on when your grant was awarded or last reviewed.",
+    sections: [
+      {t:"callout", kind:"context", html:"There is <strong>no set amount</strong> for an Access to Work grant. How much you get depends on your specific case. The grant will only cover the support needed to let you stay in work or self-employed."},
+      {t:"h", level:2, html:"The annual caps"},
+      {t:"p", html:"Access to Work grants awarded on or after 1 October 2015 are capped. The amount of the cap depends on when your grant was awarded or last reviewed."},
+      {t:"table", head:["Grant awarded or reviewed","Cap per year"], rows:[
+        ["1 October 2015 to 31 March 2016","£40,800"],
+        ["1 April 2016 to 31 March 2017","£41,400"],
+        ["1 April 2017 to 31 March 2018","£42,100"],
+        ["1 April 2018 to 31 March 2019","£57,200"],
+        ["1 April 2019 to 31 March 2020","£59,200"],
+        ["1 April 2020 to 31 March 2021","£60,700"],
+        ["1 April 2021 to 31 March 2022","£62,900"],
+        ["1 April 2022 to 31 March 2023","£65,180"],
+        ["1 April 2023 to 7 April 2024","£66,000"],
+        ["8 April 2024 to 31 March 2025","£69,260"],
+        ["1 April 2025 to 31 March 2026","£69,260"],
+        ["1 April 2026 to 31 March 2027","£69,260"]
+      ]},
+      {t:"callout", kind:"caution", html:"Grants awarded <strong>before 1 October 2015</strong> are not capped. They will be capped from 1 April 2018."},
+      {t:"h", level:2, html:"What the money can pay for"},
+      {t:"list", tick:true, items:[
+        "changes to the equipment you use",
+        "special equipment",
+        "fares to work if you cannot use public transport",
+        "a support worker or job coach to help you in your workplace",
+        "a support service if you have a mental health condition and you are absent from work or finding it difficult to work",
+        "disability awareness training for your colleagues",
+        "someone to help you at a job interview",
+        "the cost of moving your equipment if you change location or job"
+      ]},
+      {t:"callout", kind:"analogy", html:"Read the cap as a <strong>ceiling, not a target</strong>. The grant is built from your specific case — a tailored package for your job and your barriers — and then the cap simply limits what can be awarded in a year."}
+    ],
+    quiz: [
+      {q:"Is there a set amount for an Access to Work grant?", opts:["Yes, a fixed annual sum","No — it depends on your specific case","Yes, based on your salary","Yes, based on your condition"], a:1, exp:"There is no set amount. How much you get depends on your specific case, and the grant only covers the support needed to stay in work."},
+      {q:"What is the annual cap for a grant awarded between 1 April 2026 and 31 March 2027?", opts:["£40,800","£66,000","£69,260","There is no cap"], a:2, exp:"The cap for grants awarded or reviewed between 1 April 2026 and 31 March 2027 is £69,260."},
+      {q:"Which of these can the grant pay for?", opts:["Your regular salary","Disability awareness training for your colleagues","Your commute if you can use public transport","Business start-up costs"], a:1, exp:"Disability awareness training for colleagues is listed. Travel is only funded where you cannot use available public transport."},
+      {q:"What determines your cap?", opts:["Your job title","When your grant was awarded or last reviewed","Your employer's size","Your age"], a:1, exp:"The cap depends on when your grant was awarded or last reviewed."}
+    ],
+    flash: [
+      {t:"Grant amount", d:"No set amount — case by case, covering only the support needed to stay in work or self-employed."},
+      {t:"Cap (2026–27 awards)", d:"£69,260 per year."},
+      {t:"What sets your cap", d:"When your grant was awarded or last reviewed."},
+      {t:"Pre-2015 grants", d:"Not capped — but will be capped from 1 April 2018."}
+    ],
+    keep: "There is no set amount — the grant is built from your specific case and only covers support needed to keep you in work. Grants awarded on or after 1 October 2015 are capped, with the cap set by when the grant was awarded or last reviewed; awards from April 2026 to March 2027 are capped at £69,260 a year. It can fund equipment, travel you cannot do on public transport, support workers, mental health support services, interview help, and disability awareness training for colleagues."
+  },
+
+  /* ---------------------------------------------------------------- 9 */
+  {
+    id: "atw-apply",
+    num: "Mission 9",
+    title: "How to apply",
+    est: "5 min",
+    mission: "Apply online, or call the helpline. Have your National Insurance number, workplace address, a workplace contact and your UTR ready.",
+    chips: ["Apply online", "0800 121 7479", "Relay UK available", "Five things to gather"],
+    rush: "The quickest way to apply is online. You can also call the Access to Work helpline on 0800 121 7479, Monday to Friday, 9am to 5pm. Relay UK and a British Sign Language video relay service are available. Have your National Insurance number, workplace address including postcode, a workplace contact's details, and, if self-employed, your UTR number ready.",
+    sections: [
+      {t:"h", level:2, html:"Apply online"},
+      {t:"p", html:"The quickest and easiest way to apply for Access to Work is <strong>online</strong>."},
+      {t:"h", level:2, html:"Or call the helpline"},
+      {t:"stat", items:[["0800 121 7479","Access to Work helpline"],["9am–5pm","Monday to Friday"],["18001","Relay UK prefix, then the number"]]},
+      {t:"callout", kind:"context", html:"<strong>Relay UK</strong> — if you cannot hear or speak on the phone, dial 18001 then 0800 121 7479.<br><br><strong>British Sign Language (BSL) video relay service</strong> is available if you are on a computer."},
+      {t:"h", level:2, html:"What to have ready when you contact them"},
+      {t:"list", tick:true, items:[
+        "your National Insurance number",
+        "your workplace address, including your postcode",
+        "the name, email address and work phone number of a workplace contact, for example your manager",
+        "your UTR number (if you are self-employed)",
+        "the name of your New Enterprise Allowance mentor (if you have one)"
+      ]},
+      {t:"h", level:2, html:"What happens when you make contact"},
+      {t:"p", html:"You will be asked what help and support you need when you apply. Access to Work will also <strong>contact your employer</strong> for more information."},
+      {t:"h", level:2, html:"If reading or using the phone is difficult"},
+      {t:"p", html:"If you find it hard to read their letters, complete their forms, or use a phone, there are many different ways they can communicate with you."},
+      {t:"p", html:"They can communicate by <strong>braille, British Sign Language, a hearing loop, translations, large print, audio, email</strong> or something else — contact them to arrange it."},
+      {t:"callout", kind:"analogy", html:"The application asks for a <strong>workplace contact</strong>, and Access to Work contacts your employer. So it is worth thinking, before you call, about who that person should be and whether you want to brief them first."}
+    ],
+    quiz: [
+      {q:"What is the quickest way to apply?", opts:["By post","Online","Through your employer","Through your GP"], a:1, exp:"The quickest and easiest way to apply is online."},
+      {q:"What is the Access to Work helpline number?", opts:["0800 121 7479","0800 111 1111","0300 123 4567","0800 328 5644"], a:0, exp:"The helpline is 0800 121 7479, Monday to Friday, 9am to 5pm."},
+      {q:"If you cannot hear or speak on the phone, what do you dial first?", opts:["999","18001 (Relay UK)","141","1471"], a:1, exp:"Relay UK: dial 18001 then 0800 121 7479."},
+      {q:"Which of these is NOT one of the things to have ready?", opts:["Your National Insurance number","Your workplace address and postcode","Your employer's annual turnover","Your UTR number if self-employed"], a:2, exp:"You need your National Insurance number, workplace address, a workplace contact's details, your UTR number if self-employed, and your New Enterprise Allowance mentor's name if you have one."}
+    ],
+    flash: [
+      {t:"Helpline", d:"0800 121 7479. Monday to Friday, 9am to 5pm."},
+      {t:"Relay UK", d:"If you cannot hear or speak on the phone, dial 18001 then 0800 121 7479."},
+      {t:"Workplace contact", d:"You will need to give the name, email and work phone number of someone at your workplace — for example your manager."},
+      {t:"Alternative formats", d:"Braille, BSL, hearing loop, translations, large print, audio, email — ask."}
+    ],
+    keep: "Apply online, or call the Access to Work helpline on 0800 121 7479 (Mon–Fri, 9am–5pm). Relay UK works by dialling 18001 first, and a BSL video relay service is available. Have ready your National Insurance number, workplace address with postcode, a workplace contact's name, email and work phone, your UTR number if self-employed, and your New Enterprise Allowance mentor's name if you have one. Access to Work will also contact your employer."
+  },
+
+  /* ---------------------------------------------------------------- 10 */
+  {
+    id: "atw-assess",
+    num: "Mission 10",
+    title: "Assessments and support workers",
+    est: "5 min",
+    mission: "A case manager contacts you after you apply. If you already know what you need, you may not need an assessment at all.",
+    chips: ["Case manager first", "Assessment optional", "Phone, video or in person", "Support workers continue"],
+    rush: "After you apply, a case manager will contact you to discuss what help you could get, and you may need a workplace assessment. If you already know what support you need, you do not need an assessment. Assessments can be by phone, online video call, or in person at the workplace.",
+    sections: [
+      {t:"callout", kind:"context", html:"After you apply, a <strong>case manager</strong> will contact you to discuss what help you could get. You may need an <strong>assessment of your workplace</strong> to assess your needs."},
+      {t:"callout", kind:"analogy", html:"<strong>If you know what support you need, you do not need to have an assessment.</strong> That is one of the most useful sentences in the whole factsheet — because it means the process can be much shorter than people assume."},
+      {t:"p", html:"An Access to Work case manager will discuss the award with you and develop a <strong>tailored package of support</strong>."},
+      {t:"h", level:2, html:"How assessments happen"},
+      {t:"p", html:"If you need to have an assessment, it will be carried out in one of three ways:"},
+      {t:"list", tick:true, items:["by telephone","by online video call","in person, within the workplace"]},
+      {t:"p", html:"If you cannot use the telephone or a video call, contact the organisation that is arranging the assessment to agree another way to have it. This could be through an online British Sign Language (BSL) interpreting service or an online video service."},
+      {t:"p", html:"If you need to rearrange or cancel an assessment, contact the organisation that has arranged it with you."},
+      {t:"h", level:2, html:"Support workers"},
+      {t:"list", tick:true, items:[
+        "You can continue to use your existing support worker while working from home",
+        "If you need to cancel a support worker at short notice and are charged a fee, you may be able to claim that money"
+      ]},
+      {t:"h", level:2, html:"Interpreters"},
+      {t:"list", tick:true, items:[
+        "If you use a BSL interpreter and they cannot visit your home, Access to Work could help pay for an online BSL interpreting service",
+        "You need to tell Access to Work if you change the type of support you are using — for example, if you start using an online interpreting service instead of a BSL support worker",
+        "If your interpreter can provide interpreting services online, they can still be paid for this",
+        "Access to Work will not be able to pay for any travel time if they are not travelling to support you"
+      ]},
+      {t:"h", level:2, html:"If your support worker is off sick"},
+      {t:"p", html:"If your support worker cannot support you because they are sick, you may still be able to claim payment for them — but only if <strong>your Access to Work award includes payment for your support worker while they are off sick</strong>."},
+      {t:"callout", kind:"caution", html:"You cannot get help to pay for your support worker if they are sick but payment for their sickness is not included in your award. They may be able to claim <strong>Statutory Sick Pay</strong>, <strong>Employment and Support Allowance</strong> or <strong>Universal Credit</strong> instead."}
+    ],
+    quiz: [
+      {q:"Do you always need a workplace assessment?", opts:["Yes, always","No — if you know what support you need, you do not need one","Only for physical conditions","Only if you are self-employed"], a:1, exp:"If you know what support you need, you do not need to have an assessment."},
+      {q:"Which of these is NOT a way assessments are carried out?", opts:["By telephone","By online video call","In person at the workplace","By written exam"], a:3, exp:"Assessments are by telephone, online video call, or in person within the workplace."},
+      {q:"If you cannot use a phone or video call for an assessment, what should you do?", opts:["Cancel the application","Contact the organisation arranging it to agree another way","Ask your employer to do it for you","Wait for a home visit"], a:1, exp:"Contact the organisation arranging the assessment to agree another way — such as an online BSL interpreting service or an online video service."},
+      {q:"Can you still claim for a support worker who is off sick?", opts:["No, never","Yes, but only if your award includes payment for their sickness","Yes, always, in full","Only if you pay them directly"], a:1, exp:"You may still be able to claim payment if your award includes payment for your support worker while they are off sick."}
+    ],
+    flash: [
+      {t:"Case manager", d:"Contacts you after you apply, discusses your award, and develops a tailored package of support."},
+      {t:"Assessment formats", d:"Telephone, online video call, or in person within the workplace."},
+      {t:"Support worker when you work from home", d:"You can continue to use your existing support worker."},
+      {t:"Cancelling a support worker short notice", d:"If you are charged a fee, you may be able to claim that money."}
+    ],
+    keep: "A case manager contacts you after applying and builds a tailored package. You may need a workplace assessment, but if you already know what support you need you do not need one. Assessments happen by phone, video call, or in person. You can keep your existing support worker while working from home, and may be able to claim a cancellation fee if you have to cancel at short notice. Support worker sick pay counts only if your award includes it."
+  },
+
+  /* ---------------------------------------------------------------- 11 */
+  {
+    id: "atw-claim",
+    num: "Mission 11",
+    title: "Claiming your money back",
+    est: "4 min",
+    mission: "You have 9 months to claim costs. If you cannot get a signature, an email can work instead.",
+    chips: ["9-month window", "Email instead of signature", "Post or email claims", "7-day callback"],
+    rush: "You have 9 months to claim for costs. If you cannot get your employer or support worker to sign your claim, you can ask them to send an email instead confirming the costs are correct — you print it and send it with your claim. If you cannot leave home or post a claim, ask your case manager about claiming by email.",
+    sections: [
+      {t:"stat", items:[["9 months","the deadline to claim for costs"],["7 days","for the helpline to arrange a callback"]]},
+      {t:"h", level:2, html:"If you cannot get a signature"},
+      {t:"p", html:"If you cannot get your employer or your support worker to sign your claim for costs, you can ask them to <strong>send you an email instead</strong>."},
+      {t:"p", html:"The email should confirm that the costs you are claiming are correct. You will need to <strong>print the email and send it to Access to Work</strong> with your claim."},
+      {t:"h", level:2, html:"If you cannot post your claim"},
+      {t:"p", html:"If you cannot leave home or ask someone else to post your claim for costs, contact your Access to Work case manager and ask if you can <strong>send your claim by email</strong>. They will tell you what you need to do."},
+      {t:"p", html:"You can also send the email from your employer or your support worker by email."},
+      {t:"h", level:2, html:"If you have a question about your payments"},
+      {t:"p", html:"Contact the Access to Work helpline. Someone will arrange to <strong>call you back within 7 days</strong>."},
+      {t:"h", level:2, html:"Travel costs"},
+      {t:"list", tick:true, items:[
+        "Access to Work can only pay towards travel costs needed because of your disability or health condition",
+        "If you are no longer travelling to work, you should not claim for any travel support",
+        "You can start receiving support towards travel when you start travelling to work again"
+      ]},
+      {t:"callout", kind:"analogy", html:"Two deadlines carry the risk here: <strong>9 months</strong> to claim, and <strong>12 weeks</strong> before your support ends if you want to renew. Put both in your calendar the day the award letter arrives."}
+    ],
+    quiz: [
+      {q:"How long do you have to claim for costs?", opts:["3 months","6 months","9 months","12 months"], a:2, exp:"You have 9 months to claim for costs."},
+      {q:"What can you do if you cannot get your claim signed?", opts:["Nothing — a signature is mandatory","Ask your employer or support worker to email instead, and print it with your claim","Ask your GP to sign it","Claim without it"], a:1, exp:"You can ask them to send an email confirming the costs are correct, then print the email and send it with your claim."},
+      {q:"If you cannot leave home to post a claim, what should you do?", opts:["Give up on the claim","Ask your case manager about sending the claim by email","Ask Access to Work to collect it","Wait until you can go out"], a:1, exp:"Contact your Access to Work case manager and ask if you can send your claim by email."},
+      {q:"What happens if you no longer travel to work?", opts:["You keep claiming travel support","You should not claim for travel support","Your whole award ends","You must repay it"], a:1, exp:"If you are no longer travelling to work, you should not claim for any travel support. You can resume when you start travelling to work again."}
+    ],
+    flash: [
+      {t:"Claim window", d:"9 months to claim for costs."},
+      {t:"Email instead of signature", d:"Permitted — it must confirm the costs are correct, and you print it and send it with your claim."},
+      {t:"Payment queries", d:"Contact the helpline; they will arrange a callback within 7 days."},
+      {t:"Travel costs", d:"Only payable where needed because of your disability or health condition."}
+    ],
+    keep: "You have 9 months to claim costs. If you cannot get your claim signed, an email from your employer or support worker confirming the costs will do — print it and send it with your claim. If you cannot post it, ask your case manager whether you can claim by email. Payment questions go to the helpline, with a callback within 7 days. Travel support stops when you stop travelling to work, and resumes when you start again."
+  },
+
+  /* ---------------------------------------------------------------- 12 */
+  {
+    id: "atw-change",
+    num: "Mission 12",
+    title: "If things change",
+    est: "4 min",
+    mission: "Report changes to your circumstances — they may affect your award. Access to Work contacts you 12 weeks before support ends to renew.",
+    chips: ["Report changes", "May change your award", "12-week renewal nudge", "Reviews any number of times"],
+    rush: "If the support you need changes, you need to tell Access to Work — changes may affect the amount of your award. If you have a change of employer or your job role changes, you can ask for a review, as many times as your situation changes. Access to Work will contact you 12 weeks before your support is due to end.",
+    sections: [
+      {t:"callout", kind:"caution", html:"If the support you need changes — for example because you have started to work from home — you need to <strong>tell Access to Work</strong>. Report a change by contacting the Access to Work helpline."},
+      {t:"callout", kind:"context", html:"If you have started to work from home but your support needs are <strong>the same</strong>, you do not need to report this."},
+      {t:"h", level:2, html:"Why changes matter"},
+      {t:"p", html:"You need to report any changes to your circumstances because they <strong>may affect the amount of your award</strong>."},
+      {t:"p", html:"An Access to Work case manager will discuss working from home with you and your employer to understand what support is needed. If they cannot identify the support you need, they will put you in touch with a <strong>workplace assessor</strong>, who will work with you and your employer to recommend how to overcome the barriers you face."},
+      {t:"h", level:2, html:"If you have nearly reached your cap"},
+      {t:"p", html:"If you need extra support but have reached or have nearly reached the maximum amount of your award, speak to your Access to Work case manager. You can continue to get a grant of up to <strong>£69,260 a year</strong>."},
+      {t:"p", html:"If you have not yet spent all the award, your case manager can work with you to agree how to spend the rest of the money."},
+      {t:"h", level:2, html:"Change of employer or job role"},
+      {t:"p", html:"If you have had a change of employer or your job role has changed, you can ask for your award to be <strong>reviewed</strong>. This can take place as many times as your situation changes, and you will still be able to get your award looked at again if you do not agree with the level of your reviewed award."},
+      {t:"h", level:2, html:"Renewals"},
+      {t:"callout", kind:"context", html:"Access to Work will contact you <strong>12 weeks before your support is due to end</strong>. If you would like your support to continue, you will need to apply to renew it."},
+      {t:"callout", kind:"analogy", html:"The 12-week contact is a <strong>prompt, not an automatic renewal</strong>. Nothing continues on its own — you have to apply to renew."}
+    ],
+    quiz: [
+      {q:"When must you tell Access to Work about a change?", opts:["Only at renewal","When the support you need changes","Only if your address changes","Only if you change employer"], a:1, exp:"If the support you need changes, you need to tell Access to Work — changes may affect the amount of your award."},
+      {q:"If you work from home but your support needs are unchanged, what do you do?", opts:["Report it within 7 days","Report it at renewal","Nothing — you do not need to report this","Cancel your award"], a:2, exp:"If you have started to work from home but your support needs are the same, you do not need to report this."},
+      {q:"How much notice does Access to Work give before your support ends?", opts:["2 weeks","6 weeks","12 weeks","6 months"], a:2, exp:"Access to Work will contact you 12 weeks before your support is due to end."},
+      {q:"How many times can you ask for your award to be reviewed after a change of employer or role?", opts:["Once only","Twice","As many times as your situation changes","Never"], a:2, exp:"It can take place as many times as your situation changes."}
+    ],
+    flash: [
+      {t:"Report a change", d:"If the support you need changes — including starting to work from home — you must tell Access to Work via the helpline."},
+      {t:"No change needed", d:"Working from home with unchanged support needs does not need to be reported."},
+      {t:"Renewal contact", d:"Access to Work contacts you 12 weeks before support ends. You must apply to renew."},
+      {t:"Reviews", d:"Available after a change of employer or role, as many times as your situation changes."}
+    ],
+    keep: "Tell Access to Work when the support you need changes, because it may affect your award — but you do not need to report working from home if your needs are unchanged. If you have a change of employer or role you can ask for a review, as often as your situation changes. If you are near your cap, talk to your case manager, who can help you use what is left. Access to Work contacts you 12 weeks before support ends, but renewal is not automatic — you must apply."
+  },
+
+  /* ---------------------------------------------------------------- 13 */
+  {
+    id: "atw-problems",
+    num: "Mission 13",
+    title: "If something goes wrong",
+    est: "3 min",
+    mission: "You cannot appeal the level of an award, but you are entitled to one reconsideration by a different case manager.",
+    chips: ["No appeal on amount", "One reconsideration", "Different case manager", "Complaints procedure"],
+    rush: "It is not possible to appeal against the level of an Access to Work award. However, everybody is entitled to one reconsideration of an award by a different case manager. If you have had poor customer service or think your claim was not handled correctly, you can complain using the DWP complaints procedure.",
+    sections: [
+      {t:"callout", kind:"context", html:"Access to Work is decided on a case-to-case level, and the amount awarded is based on discussions with you and with your employer. This means it is <strong>not possible to appeal against the level of an award</strong>."},
+      {t:"h", level:2, html:"But you are entitled to a reconsideration"},
+      {t:"p", html:"The Access to Work scheme does have a <strong>reconsideration policy</strong>."},
+      {t:"p", html:"Everybody is entitled to <strong>one reconsideration of an award by a different Access to Work case manager</strong>. Use the contact details at the top of your award letter if you want to arrange this."},
+      {t:"callout", kind:"analogy", html:"The important word is <strong>different</strong>. A reconsideration is not just asking the same person again — it is a fresh look by a different case manager."},
+      {t:"h", level:2, html:"How to complain"},
+      {t:"p", html:"A reconsideration does not, on its own, give reasons for a complaint. However, if you have had <strong>poor customer service</strong>, or you think your Access to Work claim has <strong>not been handled correctly</strong>, you can complain using the DWP complaints procedure."},
+      {t:"h", level:2, html:"The routes, side by side"},
+      {t:"table", head:["What went wrong","What you can do"], rows:[
+        ["You do not agree with the level of your award","One reconsideration by a different case manager"],
+        ["Poor customer service","Complain via the DWP complaints procedure"],
+        ["Your claim was not handled correctly","Complain via the DWP complaints procedure"],
+        ["Your employer or role changed","Ask for a review (as often as things change)"]
+      ]}
+    ],
+    quiz: [
+      {q:"Can you appeal against the level of your award?", opts:["Yes, through a tribunal","Only if you are self-employed","No — but you can ask for one reconsideration","Yes, within 30 days"], a:2, exp:"It is not possible to appeal against the level of an award, but everybody is entitled to one reconsideration by a different case manager."},
+      {q:"How many reconsiderations are you entitled to?", opts:["None","One","Two","Unlimited"], a:1, exp:"Everybody is entitled to one reconsideration of an award."},
+      {q:"What is significant about the reconsideration?", opts:["It is decided by your employer","It is carried out by a different case manager","It costs a fee","It must be in writing within 7 days"], a:1, exp:"The reconsideration is carried out by a different Access to Work case manager."},
+      {q:"If you have had poor customer service, what can you do?", opts:["Ask for a reconsideration","Complain using the DWP complaints procedure","Appeal to a tribunal","Nothing"], a:1, exp:"A reconsideration does not on its own give reasons for a complaint, but you can complain about poor service or incorrect handling using the DWP complaints procedure."}
+    ],
+    flash: [
+      {t:"Appeal on amount", d:"Not possible. Awards are decided case by case, based on discussions with you and your employer."},
+      {t:"Reconsideration", d:"One per award, carried out by a different Access to Work case manager."},
+      {t:"Complaints", d:"For poor customer service or a claim not handled correctly — use the DWP complaints procedure."},
+      {t:"Review", d:"Different from both: for when your employer or job role changes."}
+    ],
+    keep: "You cannot appeal the level of an award, because awards are decided case by case from discussions with you and your employer. But you are entitled to one reconsideration by a different case manager — use the contact details on your award letter. For poor customer service or a claim that was not handled correctly, use the DWP complaints procedure. And if your employer or role changes, that is a review, not a complaint."
+  }
+
+  ]
+}
+];
+
+/* =========================================================================
+   Focus Edition — engine (app.js)
+   Handles rendering, state, quizzes, flashcards, breaks, progress,
+   dark mode, keyboard nav, cert, and print. No dependencies.
+   ========================================================================= */
+(function () {
+  "use strict";
+
+  var KEY = "focusEdition.v1";
+  var DEFAULT_STATE = { theme: "light", done: [], points: 0, quiz: {}, last: null, certName: "" };
+
+  var store;
+  var app;          // #app
+  var menuEl;       // #menu
+  var confettiEl;   // #confetti
+  var toastEl;      // #toast
+  var current;      // {book, mission}
+
+  /* ---------------- safe storage ----------------
+     localStorage can be blocked/throw for file:// pages, sandboxed
+     iframes and private windows. We never let that break the app:
+     reading and writing go through a wrapper that silently falls back
+     to in-memory state so the page still renders and still works.  */
+  function storageGet(key) {
+    try { return window.localStorage.getItem(key); } catch (e) { return null; }
+  }
+  function storageSet(key, val) {
+    try { window.localStorage.setItem(key, val); return true; } catch (e) { return false; }
+  }
+
+  /* ---------------- state helpers ---------------- */
+  function load() {
+    try { store = JSON.parse(storageGet(KEY)) || JSON.parse(JSON.stringify(DEFAULT_STATE)); }
+    catch (e) { store = JSON.parse(JSON.stringify(DEFAULT_STATE)); }
+    if (!store.theme) store.theme = "light";
+    if (!Array.isArray(store.done)) store.done = [];
+    if (typeof store.points !== "number") store.points = 0;
+    if (!store.quiz) store.quiz = {};
+  }
+  function save() {
+    // Never crash on a blocked/private/sandboxed storage bucket.
+    var json;
+    try { json = JSON.stringify(store); } catch (e) { return; }
+    storageSet(KEY, json);
+  }
+
+  function allMissions() {
+    var list = [];
+    BOOKS.forEach(function (b) { b.missions.forEach(function (m) { list.push(m); }); });
+    return list;
+  }
+  function findMission(id) {
+    for (var i = 0; i < BOOKS.length; i++)
+      for (var j = 0; j < BOOKS[i].missions.length; j++)
+        if (BOOKS[i].missions[j].id === id) return { book: BOOKS[i], mission: BOOKS[i].missions[j], i: i, j: j };
+    return null;
+  }
+  function totalMissions() { return allMissions().length; }
+  function doneCount() { return store.done.length; }
+  function maxPoints() {
+    var n = 0; allMissions().forEach(function (m) { n += (m.quiz || []).length; }); return n;
+  }
+  function pctDone() { return totalMissions() ? Math.round(doneCount() / totalMissions() * 100) : 0; }
+
+  /* ---------------- tiny utils ---------------- */
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function toast(msg) { toastEl.textContent = msg; toastEl.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(function () { toastEl.classList.remove("show"); }, 1800); }
+
+  var ACCENTS = ["p", "b", "g", "o", "r", "t"];
+  function accentColor(a) { return { p: "#7c3aed", b: "#1d6bb8", g: "#0f8a5f", o: "#c2701d", r: "#c23b6a", t: "#2b7a94" }[a] || "#7c3aed"; }
+
+  /* ---------------- section renderers ---------------- */
+  function renderSection(s) {
+    if (!s || !s.t) return "";
+    switch (s.t) {
+      case "p": return "<p>" + s.html + "</p>";
+      case "h":
+        var tag = s.level === 2 ? "h2" : "h3";
+        return "<" + tag + ">" + s.html + "</" + tag + ">";
+      case "callout":
+        var k = s.kind === "caution" ? "c2" : s.kind === "context" ? "c3" : s.kind === "analogy" ? "c4" : "c1";
+        var ctag = (s.kind === "caution" ? "🟥 Caution" : s.kind === "context" ? "🟦 Context" : s.kind === "analogy" ? "🟪 Analogy" : "🟨 Research / Evidence");
+        return '<div class="callout ' + k + '"><span class="ctag">' + ctag + "</span>" + s.html + "</div>";
+      case "stat":
+        var cells = s.items.map(function (it) { return '<div class="stat"><div class="num">' + it[0] + '</div><div class="lbl">' + it[1] + "</div></div>"; }).join("");
+        return '<div class="statgrid">' + cells + "</div>";
+      case "quote":
+        return '<figure class="pullquote">“' + s.text + '”<figcaption class="by">— ' + s.by + "</figcaption></figure>";
+      case "list":
+        return '<ul class="focuslist' + (s.tick ? " tick" : "") + '">' + s.items.map(function (it) { return "<li>" + it + "</li>"; }).join("") + "</ul>";
+      case "table":
+        var head = s.head.map(function (h) { return "<th>" + h + "</th>"; }).join("");
+        var rows = s.rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + c + "</td>"; }).join("") + "</tr>"; }).join("");
+        return '<div class="tablewrap"><table><thead><tr>' + head + "</tr></thead><tbody>" + rows + "</tbody></table></div>";
+      case "chain":
+        var st = s.steps.map(function (x, i) {
+          return '<div class="step"><span class="n">Step ' + (i + 1) + "</span><span>" + x + "</span></div>";
+        }).join('<div class="arrow">→</div>');
+        return '<div class="chain">' + st + "</div>";
+      case "timeline":
+        var tl = s.items.map(function (it) { return '<li><div class="tdate">' + (it.date || "") + '</div><div class="tlabel">' + it.label + "</div>" + (it.text ? "<div class=\"small mut\">" + it.text + "</div>" : "") + "</li>"; }).join("");
+        return '<ol class="timeline">' + tl + "</ol>";
+      default: return "";
+    }
+  }
+
+  /* ---------------- break card (timer + game) ---------------- */
+  function breakHTML() {
+    var h =
+      '<div class="breakcard no-print" data-break>' +
+        '<div class="bhead">🧩 Intentional break</div>' +
+        '<div class="intent">This pause is on purpose. Short, deliberate breaks are how attention stays fresh — taking them is the point, not the interruption.</div>' +
+        '<div class="stretch">🚶 Stand up &middot; stretch &middot; look at something 6+ metres away (20+ ft) to rest your eyes.</div>' +
+        '<div class="timer">' +
+          '<div class="clock" aria-live="polite">1:30</div>' +
+          '<div class="tbtns">' +
+            '<button class="btn sm js-timer-start" type="button">▶ Start</button>' +
+            '<button class="btn sm js-timer-pause" type="button" disabled>⏸ Pause</button>' +
+            '<button class="btn sm js-timer-reset" type="button">↺ Reset</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="game-cmd">👀 Tiny reset game — tap the emoji that doesn’t belong. 3 rounds, go.</div>' +
+        '<div class="gameboard" role="group" aria-label="Spot the odd emoji game"></div>' +
+        '<div class="gamestatus" aria-live="polite"></div>' +
+      '</div>';
+    return h;
+  }
+
+  function wireBreak(root) {
+    var card = root.querySelector("[data-break]");
+    if (!card) return;
+    var clock = card.querySelector(".clock");
+    var start = card.querySelector(".js-timer-start");
+    var pause = card.querySelector(".js-timer-pause");
+    var reset = card.querySelector(".js-timer-reset");
+    var total = 90, left = 90, running = false, iv = null;
+    function fmt(s) { var m = Math.floor(s / 60), ss = s % 60; return m + ":" + (ss < 10 ? "0" : "") + ss; }
+    function paint() { clock.textContent = fmt(left); clock.classList.toggle("done", left === 0); }
+    function stop() { running = false; clearInterval(iv); iv = null; pause.disabled = true; start.disabled = false; }
+    function tick() { left--; paint(); if (left <= 0) { stop(); toast("⏱ Break done — well done."); } }
+    start.addEventListener("click", function () {
+      if (left === 0) left = total;
+      if (running) return; running = true; start.disabled = true; pause.disabled = false;
+      stop(); running = true; iv = setInterval(tick, 1000);
+    });
+    pause.addEventListener("click", function () { if (running) { stop(); } });
+    reset.addEventListener("click", function () { stop(); left = total; paint(); });
+
+    // game
+    var board = card.querySelector(".gameboard");
+    var status = card.querySelector(".gamestatus");
+    var POOLS = [
+      ["😀", "😃"],
+      ["🍎", "🍏"],
+      ["🐶", "🐱"],
+      ["🔵", "🔴"],
+      ["⚽", "🏀"],
+      ["🌙", "☀️"]
+    ];
+    var round = 0, solved = 0;
+    function newRound() {
+      if (round >= 3) { status.innerHTML = "<span class='okc'>✓ Focus reset! Nailed it.</span>"; return; }
+      var pool = POOLS[round % POOLS.length];
+      var odd = Math.floor(Math.random() * 9);
+      var cells = [];
+      for (var i = 0; i < 9; i++) cells.push(i === odd ? pool[1] : pool[0]);
+      // shuffle
+      cells.sort(function () { return Math.random() - 0.5; });
+      board.innerHTML = "";
+      cells.forEach(function (c, idx) {
+        var b = el("button", "gamecell", c);
+        b.setAttribute("type", "button");
+        b.addEventListener("click", function () {
+          if (b.classList.contains("done") || b.classList.contains("mis")) return;
+          if (c === pool[1]) {
+            b.classList.add("done");
+            status.innerHTML = "<span class='okc'>✓ Found it!</span>";
+            round++; newRound();
+          } else {
+            b.classList.add("mis");
+            b.style.background = "var(--err-bg)";
+            status.innerHTML = "<span class='erb'>✗ That one belongs.</span>";
+            setTimeout(function () { b.style.background = ""; }, 500);
+          }
+        });
+        board.appendChild(b);
+      });
+    }
+    newRound();
+  }
+
+  /* ---------------- quiz renderer ---------------- */
+  function renderQuiz(m) {
+    var qs = (m.quiz || []).slice(0, 4);
+    if (!qs.length) return "";
+    var saved = store.quiz[m.id] || {};
+    var h = '<div class="quiz" data-quiz="' + m.id + '"><h3>🧠 Quick check — 4 questions</h3>';
+    h += '<p class="small mut">Answer and get instant feedback. Correct = +1 point. You can revisit any time.</p>';
+    qs.forEach(function (q, i) {
+      var chosen = saved[i];
+      var answered = typeof chosen === "number";
+      h += '<div class="q" data-q="' + i + '">';
+      h += '<div class="qtxt"><span class="mut">Q' + (i + 1) + ".</span> " + q.q + "</div>";
+      q.opts.forEach(function (o, oi) {
+        var cls = "opt";
+        var key = String.fromCharCode(65 + oi);
+        var mark = "";
+        if (answered && oi === q.a) { cls += " correct"; mark = "✓"; }
+        if (answered && oi === chosen && oi !== q.a) { cls += " wrong"; mark = "✗"; }
+        h += '<button type="button" class="' + cls + '" data-opt="' + oi + '"' + (answered ? " disabled" : "") + (oi === q.a ? ' data-correct="1"' : "") + '>';
+        h += '<span class="k">' + (mark || key) + "</span>";
+        h += "<span>" + o + "</span>";
+        // print-visible correct-answer marker (shown only in print)
+        if (oi === q.a) h += '<span class="flipanswer"> · ✓ correct answer</span>';
+        h += "</button>";
+      });
+      h += '<div class="feedback ' + (answered ? (chosen === q.a ? "good" : "bad") + " show" : "") + '" role="status">';
+      if (answered) {
+        if (chosen === q.a) h += "<span>✓ Correct! +1 point.</span>";
+        else h += "<span>✗ Not quite — the right answer is highlighted.</span>";
+        if (q.exp) h += '<span class="exp">' + expFor(chosen, q) + "</span>";
+      }
+      h += "</div></div>";
+    });
+    h += "</div>";
+    return h;
+  }
+  // Explanation: prefer a question-specific explanation; else generic split by correct/wrong
+  function expFor(chosen, q) {
+    if (q.exp) return q.exp;
+    if (chosen === q.a) return q.ok || "Correct — this is the idea the section centres on.";
+    return "The gold answer is highlighted above.";
+  }
+  function wireQuiz(root) {
+    var quiz = root.querySelector("[data-quiz]");
+    if (!quiz) return;
+    var mId = quiz.getAttribute("data-quiz");
+    var m = findMission(mId).mission;
+    var saved = store.quiz[mId] || {};
+    quiz.querySelectorAll(".q").forEach(function (qBox, i) {
+      qBox.querySelectorAll(".opt").forEach(function (optBtn) {
+        optBtn.addEventListener("click", function () {
+          var chosen = parseInt(optBtn.getAttribute("data-opt"), 10);
+          var q = m.quiz[i];
+          var correct = chosen === q.a;
+          if (correct) store.points++;
+          saved[i] = chosen;
+          store.quiz[mId] = saved;
+          save();
+          // lock options, mark
+          qBox.querySelectorAll(".opt, .k").forEach(function () {});
+          qBox.querySelectorAll(".opt").forEach(function (b2, oi) {
+            b2.setAttribute("disabled", "disabled");
+            b2.classList.remove("correct", "wrong");
+            if (oi === q.a) b2.classList.add("correct");
+            if (oi === chosen && oi !== q.a) { b2.classList.add("wrong"); }
+            var k = b2.querySelector(".k");
+            if (k) k.textContent = (oi === q.a ? "✓" : oi === chosen ? "✗" : String.fromCharCode(65 + oi));
+          });
+          var fb = qBox.querySelector(".feedback");
+          fb.classList.add("show");
+          if (correct) { fb.classList.add("good"); fb.classList.remove("bad"); fb.innerHTML = "<span>✓ Correct! +1 point.</span>" + (q.exp ? '<span class="exp">' + q.exp + "</span>" : ""); }
+          else { fb.classList.add("bad"); fb.classList.remove("good"); fb.innerHTML = "<span>✗ Not quite — the right answer is highlighted.</span>" + (q.exp ? '<span class="exp">' + q.exp + "</span>" : ""); }
+          updatePoints();
+          toast(correct ? "✓ +1 point" : "✗ Try the next one!");
+        });
+      });
+    });
+  }
+
+  /* ---------------- flashcards ---------------- */
+  function renderFlash(m) {
+    var fl = (m.flash || []).slice(0, 8);
+    if (!fl.length) return "";
+    var h = '<div class="flashsection"><h3>🗂️ Key terms — tap to flip</h3><p class="small mut">Tab to a card, press Enter or Space to flip. Works with keyboard and touch.</p><div class="flashgrid">';
+    fl.forEach(function (f, i) {
+      var a = f.accent || ACCENTS[i % ACCENTS.length];
+      h += '<div class="flashcard"><button type="button" data-flip aria-pressed="false" aria-label="' + esc(('Flip card ' + (i + 1) + ': ' + f.t)) + '">' +
+        '<span class="front" style="background: color-mix(in srgb, ' + accentColor(a) + ' 12%, var(--bg2))">' + esc(f.t) +
+        '<i class="hint">tap / Enter / Space</i></span>' +
+        '<span class="back"><strong>' + esc(f.t) + "</strong><span class='flipdivider no-print' style=\"display:none\"> — </span>" + esc(f.d) + "</span>" +
+        "</button></div>";
+    });
+    h += "</div></div>";
+    return h;
+  }
+  function wireFlash(root) {
+    root.querySelectorAll("[data-flip]").forEach(function (btn) {
+      function toggle() {
+        var f = btn.closest(".flashcard");
+        var fl = btn.classList.contains("flipped");
+        if (fl) { btn.classList.remove("flipped"); btn.setAttribute("aria-pressed", "false"); if (f) f.classList.remove("flipped"); }
+        else { btn.classList.add("flipped"); btn.setAttribute("aria-pressed", "true"); if (f) f.classList.add("flipped"); }
+      }
+      btn.addEventListener("click", toggle);
+      btn.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+      });
+    });
+  }
+
+  /* ---------------- mission render ---------------- */
+  function renderMission(found) {
+    current = found;
+    var b = found.book, m = found.mission;
+    var qs = (m.quiz || []).length;
+    var fl = (m.flash || []).length;
+    var chips = (m.chips || []).map(function (c) { return '<span class="chip">' + esc(c) + "</span>"; }).join("");
+    var meta = '<span class="meta">⏱ ' + esc(m.est || "8 min") + "</span>" +
+      '<span class="meta">🎯 ' + qs + " quiz</span>" +
+      (fl ? '<span class="meta">🗂️ ' + fl + " cards</span>" : "");
+
+    var html = '<article class="mission" data-id="' + m.id + '">';
+    html += "<header>";
+    html += '<p class="small mut">' + esc(b.title) + " · " + esc(m.num || "") + "</p>";
+    html += '<h1>🎯 ' + esc(m.title) + "</h1>";
+    html += '<div class="mission-meta">' + meta + "</div>";
+    html += '<div class="chiprow">' + chips + "</div>";
+    if (m.mission) html += '<div class="mission-stmt">' + m.mission + "</div>";
+    if (m.rush) html += '<details class="rush"><summary>⚡ In a rush? Grab the essential takeaway.</summary><p class="small">' + m.rush + "</p></details>";
+    html += "</header>";
+
+    // content sections with break cards inserted (2 natural halfway breaks)
+    var body = "";
+    var sectionCount = (m.sections || []).length;
+    var bp1 = sectionCount >= 5 ? Math.round(sectionCount * 0.4) : 0;
+    var bp2 = sectionCount >= 7 ? Math.round(sectionCount * 0.78) : 0;
+    (m.sections || []).forEach(function (s, si) {
+      body += renderSection(s);
+      if ((bp1 && (si + 1) === bp1) || (bp2 && (si + 1) === bp2)) {
+        body += breakHTML();
+      }
+    });
+    html += body;
+
+    html += renderFlash(m);
+    html += renderQuiz(m);
+    if (m.keep) html += '<div class="keep"><h3>📌 Keep-forever</h3><p>' + m.keep + "</p></div>";
+
+    html += '<div class="mission-actions no-print">';
+    html += '<button class="btn primary js-markdone" type="button">' + (isDone(m.id) ? "✓ Done — click to undo" : "✓ Mark mission done") + "</button>";
+    html += "</div>";
+    html += '<div class="navrow no-print"><button class="btn js-prev" type="button" ' + (prevOf(found) ? "" : "disabled") + '>← Prev</button><button class="btn js-menu" type="button">☰ Menu</button><button class="btn js-next" type="button" ' + (nextOf(found) ? "" : "disabled") + ">Next →</button></div>";
+    html += "</article>";
+
+    app.innerHTML = html;
+    wireFlash(app);
+    wireQuiz(app);
+    wireBreak(app);
+    wireMissionControls(found);
+    updateTopbar();
+    updateProgress();
+    store.last = m.id;
+    save();
+  }
+
+  function isDone(id) { return store.done.indexOf(id) >= 0; }
+  function prevOf(found) {
+    if (found.j > 0) return { book: found.book, mission: found.book.missions[found.j - 1], i: found.i, j: found.j - 1 };
+    if (found.i > 0) { var pb = BOOKS[found.i - 1]; return { book: pb, mission: pb.missions[pb.missions.length - 1], i: found.i - 1, j: pb.missions.length - 1 }; }
+    return null;
+  }
+  function nextOf(found) {
+    if (found.j < found.book.missions.length - 1) return { book: found.book, mission: found.book.missions[found.j + 1], i: found.i, j: found.j + 1 };
+    if (found.i < BOOKS.length - 1) { var nb = BOOKS[found.i + 1]; return { book: nb, mission: nb.missions[0], i: found.i + 1, j: 0 }; }
+    return null;
+  }
+
+  function wireMissionControls(found) {
+    app.querySelector(".js-markdone").addEventListener("click", function () {
+      var id = found.mission.id;
+      if (isDone(id)) {
+        store.done = store.done.filter(function (x) { return x !== id; });
+        toast("Mission un-done.");
+      } else {
+        store.done.push(id);
+        toast("✓ Mission done.");
+      }
+      save();
+      this.innerHTML = isDone(id) ? "✓ Done — click to undo" : "✓ Mark mission done";
+      updateProgress();
+      updateTopbar();
+      if (isDone(id) && doneCount() === totalMissions()) { celebrate(); }
+    });
+    var mn = app.querySelector(".js-next"), mp = app.querySelector(".js-prev");
+    if (mn) mn.addEventListener("click", function () { var n = nextOf(found); if (n) renderMission(n); });
+    if (mp) mp.addEventListener("click", function () { var n = prevOf(found); if (n) renderMission(n); });
+    app.querySelector(".js-menu").addEventListener("click", openMenu);
+  }
+
+  /* ---------------- home ---------------- */
+  function renderHome() {
+    current = null;
+    var dots = BOOKS.map(function (b) {
+      var bdone = b.missions.filter(function (m) { return isDone(m.id); }).length;
+      var dots = b.missions.map(function (m) { return '<span class="dot' + (isDone(m.id) ? " done" : "") + '" title="' + esc(m.title) + '"></span>'; }).join("");
+      var p = b.missions.length ? Math.round(bdone / b.missions.length * 100) : 0;
+      return '<a class="bookcard homecard" href="#" data-openwork="' + b.id + '">' +
+        '<div class="btitle2">' + b.emoji + " " + esc(b.title) + "</div>" +
+        '<div class="bmeta">' + esc(b.author) + (b.volume ? " · " + esc(b.volume) : "") + "</div>" +
+        '<div class="bmeta">' + b.missions.length + " missions · " + p + "% done</div>" +
+        '<div class="bdots">' + dots + "</div></a>";
+    }).join("");
+
+    var hero = '<section class="home-hero"><h1>🎯 Focus Edition</h1>' +
+      '<div class="sub">' + esc(runtimeTitle()) + " — an official government factsheet, re-cut for a short-attention brain. Start anywhere, stop anywhere. Every mission is a self-contained sprint.</div></section>";
+
+    var disc = '<section class="homecard c3" style="background:var(--r3)"><span class="ctag" style="color:var(--r3i);font-weight:800;font-size:13px">⚠️ Hello &amp; disclaimer</span>' +
+      '<p>This edition is an <strong>adaptation of an official UK government factsheet</strong> — <em>Access to Work: factsheet for customers</em>, published by the Department for Work and Pensions on GOV.UK. Its content has been shortened, re-organised into short missions and reworded for readability. No facts have been added or strengthened. The original factsheet ends with a warning we repeat here: this gives general information only and is not a complete and authoritative statement of the law. Rules change — check GOV.UK for the latest position. It is a general summary, <strong>not an official DWP publication</strong>, and it is <strong>not endorsed by DWP or the UK Government</strong>.</p>' +
+      '<p class="small mut">Contains public sector information licensed under the Open Government Licence v3.0. The source document and the licence that permits this republication are listed in full under “Sources &amp; licence” on this page. Access to Work rules, amounts and contact details change — always check the current GOV.UK page before acting.</p></section>';
+
+    var how = '<section class="homecard"><h2>How to use this</h2>' +
+      '<ul class="focuslist tick">' +
+      '<li>Pick a 🎯 mission — they work in any order. Open the ☰ menu to jump.</li>' +
+      '<li>Each mission = self-contained: idea in ~1 screen, then a short quiz and flip cards.</li>' +
+      '<li>⚡ In a rush? Tap the “essential takeaway” instead.</li>' +
+      '<li>🏃 The 🧩 break cards are intentional — use them.</li>' +
+      '<li>✔ Mark missions done; your progress and points save in this browser.</li>' +
+      '<li>🖨️ Finish everything to unlock a printable certificate (File → Print to keep it).</li></ul></section>';
+
+    var refs = renderReferences();
+    var doneLap = totalMissions() > 0 && doneCount() === totalMissions();
+    var certCard = "";
+    if (doneLap) {
+      certCard = '<section class="homecard"><h2>🏆 All missions complete</h2>' +
+        '<p class="mut">You finished all ' + totalMissions() + " missions (" + maxPoints() + " points available). Claim your printable certificate below.</p>" +
+        '<div class="mission-actions"><button class="btn primary js-gocert" type="button">🎓 View / print certificate</button></div></section>';
+    }
+    app.innerHTML = hero + '<main>' + how + certCard + '<h2>Choose the missions</h2>' + dots + disc + refs + "</main>";
+    app.querySelectorAll("[data-openwork]").forEach(function (a) {
+      a.addEventListener("click", function (e) { e.preventDefault(); openBook(a.getAttribute("data-openwork")); });
+    });
+    if (doneLap) app.querySelector(".js-gocert").addEventListener("click", function () { showCert(); });
+    updateProgress();
+  }
+
+  function renderReferences() {
+    var h = '<section class="homecard"><h2>🗂️ Sources &amp; licence</h2>' +
+      '<p class="small mut">This edition adapts <strong>one</strong> source document. The licence that makes it legal to republish is set out below in full.</p><div class="tablewrap"><table><thead><tr><th>Item</th><th>Detail</th></tr></thead><tbody>';
+    var seen = [];
+    var topics = [
+      ["Source document", "Access to Work: factsheet for customers", "Department for Work and Pensions"],
+      ["Where it lives", "<a href='https://www.gov.uk/government/publications/access-to-work-factsheet/access-to-work-factsheet-for-customers' rel='noopener'>gov.uk/government/publications/access-to-work-factsheet</a>", "the official version"],
+      ["Licence", "Open Government Licence v3.0 — <a href='https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/' rel='noopener'>nationalarchives.gov.uk/doc/open-government-licence/version/3</a>", "permits copying, adaptation and commercial use"],
+      ["Required attribution", "Contains public sector information licensed under the Open Government Licence v3.0.", "stated as mandated by the licence"],
+      ["Source copyright", "© Crown copyright", "reproduced under the OGL — not by permission of DWP"],
+      ["Excluded by the licence", "Personal data, logos, crests and the Royal Arms", "none reproduced here"],
+      ["Status", "Adapted summary — NOT the official document", "check the current GOV.UK version before acting"]
+    ];
+    topics.forEach(function (t) { h += "<tr><td>" + t[0] + "</td><td>" + t[1] + (t[2] ? " <span class=\u0022mut small\u0022>(" + t[2] + ")</span>" : "") + "</td></tr>"; });
+    h += "</tbody></table></div>";
+    h += '<p class="small mut">Access to Work is a publicly funded employment support programme. This adaptation reproduces no departmental logos, crests or personal data, implies no official status, and is not endorsed by the Department for Work and Pensions or the UK Government. For the definitive position, read the original GOV.UK factsheet or call the helpline on <strong>0800 121 7479</strong>.</p></section>';
+    return h;
+  }
+
+  function openBook(id) {
+    var b = findBook(id);
+    if (!b) return;
+    // resume at first not-done mission, else first
+    var target = b.missions[0];
+    for (var i = 0; i < b.missions.length; i++) { if (!isDone(b.missions[i].id)) { target = b.missions[i]; break; } }
+    current = { book: b, mission: target, i: BOOKS.indexOf(b), j: b.missions.indexOf(target) };
+    renderMission(current);
+  }
+
+  function findBook(id) { for (var i = 0; i < BOOKS.length; i++) if (BOOKS[i].id === id) return BOOKS[i]; return null; }
+
+  /* ---------------- topbar ---------------- */
+  function updateTopbar() {
+    var bt = document.querySelector(".btitle");
+    var sub = document.querySelector(".bsub");
+    if (current) { bt.textContent = "Focus Edition"; sub.textContent = current.book.title + " · " + current.mission.title; }
+    else { bt.textContent = "Focus Edition"; sub.textContent = runtimeTitle(); }
+    var pct = pctDone();
+    document.querySelector(".progress-fill").style.width = pct + "%";
+    document.querySelector(".pct-label").textContent = pct + "% complete · " + store.points + " pts";
+    var dm = document.querySelector("[data-theme-btn]");
+    dm.setAttribute("aria-pressed", store.theme === "dark" ? "true" : "false");
+    dm.textContent = store.theme === "dark" ? "☀️" : "🌙";
+    dm.title = "Toggle dark mode (press T)";
+  }
+  function updateProgress() { updateTopbar(); if (menuEl) renderMenu(menuEl._bookId, menuEl._open); }
+
+  /* ---------------- menu ---------------- */
+  function openMenu() {
+    var bookId = current ? current.i : null;
+    renderMenu(bookId, null);
+    menuEl.classList.add("open");
+    menuEl._open = true;
+  }
+  function closeMenu() { menuEl.classList.remove("open"); menuEl._open = false; }
+
+  function renderMenu(bookId, ignoreOpen) {
+    var html = '<div class="menu-panel"><h2>☰ Missions <span class="small mut">' + pctDone() + "% done · " + store.points + " pts</span></h2>";
+    BOOKS.forEach(function (b, bi) {
+      html += '<h3 style="margin-top:16px">' + b.emoji + " " + esc(b.title) + "</h3>";
+      b.missions.forEach(function (m, mi) {
+        var iscur = current && current.mission.id === m.id;
+        html += '<button class="mchapter' + (iscur ? " cur" : "") + '" data-goto="' + m.id + '">' +
+          '<span class="mnum">' + (mi + 1) + '</span><span class="mtitle">' + esc(m.title) + '</span>' +
+          (isDone(m.id) ? '<span class="mdone">✓</span>' : "") +
+          "</button>";
+      });
+    });
+    if (totalMissions() > 0 && doneCount() === totalMissions()) {
+      html += '<button class="mchapter" data-gocert="1"><span class="mnum">🏆</span><span class="mtitle">View certificate</span></button>';
+    }
+    html += '<div class="navrow"><button class="btn" data-close="1">Close ✕</button></div></div>';
+    menuEl.innerHTML = html;
+    menuEl.querySelectorAll("[data-goto]").forEach(function (b) {
+      b.addEventListener("click", function () { var m = findMission(b.getAttribute("data-goto")); closeMenu(); renderMission(m); });
+    });
+    menuEl.querySelectorAll("[data-close]").forEach(function (b) {
+      b.addEventListener("click", closeMenu);
+    });
+    menuEl.querySelectorAll("[data-gocert]").forEach(function (b) {
+      b.addEventListener("click", function () { closeMenu(); showCert(); });
+    });
+  }
+
+  /* ---------------- confetti ---------------- */
+  function celebrate() {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { showCert(); return; }
+    var ctx = confettiEl.getContext("2d");
+    var W = confettiEl.width = window.innerWidth;
+    var H = confettiEl.height = window.innerHeight;
+    var colors = ["#7c3aed", "#f59e0b", "#16a34a", "#3b82f6", "#ec4899", "#fbbf24"];
+    var parts = [], N = 140;
+    for (var i = 0; i < N; i++) parts.push({ x: Math.random() * W, y: -20 - Math.random() * H * 0.4, w: 6 + Math.random() * 8, h: 8 + Math.random() * 8, c: colors[Math.floor(Math.random() * colors.length)], vy: 2 + Math.random() * 3, vx: -1 + Math.random() * 2, r: Math.random() * Math.PI });
+    var run = true, frame = 0;
+    function step() {
+      ctx.clearRect(0, 0, W, H);
+      parts.forEach(function (p) { p.y += p.vy; p.x += p.vx; p.r += 0.03; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore(); });
+      frame++;
+      if (frame < 260 && parts.some(function (p) { return p.y < H + 40; })) requestAnimationFrame(step);
+      else { confettiEl.getContext("2d").clearRect(0, 0, W, H); setTimeout(showCert, 300); }
+    }
+    requestAnimationFrame(step);
+  }
+  function showCert() {
+    var name = store.certName || "";
+    var cert = '<section class="cert"><div class="cbig">🏆 Certificate of Completion</div>' +
+      '<p class="mut">This certifies that</p>' +
+      '<div class="name"><input type="text" id="certname" value="' + esc(name) + '" placeholder="Your name" aria-label="Your name" /></div>' +
+      '<p>has completed the <strong>' + esc(runtimeTitle()) + "</strong> Focus Edition — " + totalMissions() + " missions, " + maxPoints() + " points.</p>" +
+      '<p class="small mut">' + new Date().toLocaleDateString() + "</p>" +
+      '<div class="mission-actions"><button class="btn primary no-print" data-printcert="1">🖨️ Print / save as PDF</button></div></section>';
+    var holder = document.querySelector(".cert-slot");
+    if (!holder) { var d = document.createElement("div"); d.className = "cert-slot"; app.appendChild(d); holder = d; }
+    holder.innerHTML = cert;
+    var inp = holder.querySelector("#certname");
+    inp.addEventListener("input", function () { store.certName = inp.value; save(); });
+    holder.querySelector("[data-printcert]").addEventListener("click", function () { window.print(); });
+    toast("🏆 All missions complete!"); updateTopbar();
+  }
+
+  /* ---------------- theme ---------------- */
+  function setTheme(t) { store.theme = t; document.documentElement.setAttribute("data-theme", t); save(); updateTopbar(); }
+  function toggleTheme() { setTheme(store.theme === "dark" ? "light" : "dark"); }
+
+  /* ---------------- routing ---------------- */
+  /* Render EVERY mission in one continuous flow — used for print/PDF of the whole edition. */
+  function renderPrintAll() {
+    current = null;
+    var html = '';
+    html += '<section class="print-head"><h1>🎯 ' + esc(runtimeTitle()) + '</h1>' +
+      '<p class="mut">' + totalMissions() + ' missions across ' + BOOKS.length + ' books. Read-only version for printing/PDF — the interactive version is the <strong>.html</strong> file.</p>' +
+      '<p class="small mut"><strong>Contains public sector information licensed under the Open Government Licence v3.0.</strong> Adaptation of “Access to Work: factsheet for customers” (Department for Work and Pensions, GOV.UK). This is a general summary, not the official document, and is not endorsed by DWP or the UK Government. Scheme rules, amounts and contact details change — check GOV.UK or call 0800 121 7479 before relying on anything here.</p></section>';
+    BOOKS.forEach(function (b, bi) {
+      html += '<section class="print-book"><h2 style="margin-top:34px">' + b.emoji + ' ' + esc(b.title) + '</h2>' +
+        '<p class="mut small">' + esc(b.author) + (b.volume ? ' · ' + esc(b.volume) : '') + ' — ' + esc(b.tagline || '') + '</p>';
+      b.missions.forEach(function (m) {
+        var chips = (m.chips || []).map(function (c) { return '<span class="chip">' + esc(c) + '</span>'; }).join("");
+        var meta = '<span class="meta">⏱ ' + esc(m.est || "8 min") + '</span><span class="meta">🎯 ' + (m.quiz || []).length + ' quiz</span>' + (m.flash && m.flash.length ? '<span class="meta">🗂️ ' + m.flash.length + ' cards</span>' : '');
+        html += '<article class="mission" style="break-inside:auto;box-shadow:none">';
+        html += '<p class="small mut">' + esc(b.title) + ' · ' + esc(m.num || '') + '</p>';
+        html += '<h2>🎯 ' + esc(m.title) + '</h2>';
+        html += '<div class="mission-meta no-print">' + meta + '</div>';
+        html += '<div class="chiprow no-print">' + chips + '</div>';
+        if (m.mission) html += '<div class="mission-stmt">' + m.mission + '</div>';
+        (m.sections || []).forEach(function (s) { html += renderSection(s); });
+        html += renderFlash(m);
+        html += renderQuiz(m);   // reveal answers via print CSS (opt.correct/.wrong shown, feedback shown)
+        if (m.keep) html += '<div class="keep"><h3>📌 Keep-forever</h3><p>' + m.keep + '</p></div>';
+        html += '</article>';
+      });
+      html += '</section>';
+    });
+    html += '<section class="print-ref">' + renderReferences() + '</section>';
+    app.innerHTML = html;
+    updateProgress();
+    // reveal correct answers & card backs for print: add a class that the print CSS keys off
+    document.body.className = 'printall';
+  }
+
+  function initialRoute() {
+    var hash = location.hash;
+    if (hash && hash.indexOf('#printall') === 0) { renderPrintAll(); return; }
+    if (hash && hash.indexOf("#/m/") === 0) {
+      var m = findMission(hash.slice(4));
+      if (m) { renderMission(m); return; }
+    }
+    // resume last
+    if (store.last) { var ml = findMission(store.last); if (ml) { renderMission(ml); return; } }
+    if (BOOKS.length) { renderHome(); }
+  }
+  function setHash(m) { try { history.replaceState(null, "", "#/m/" + m.id); } catch (e) {} }
+
+  /* ---------------- boot ---------------- */
+  function buildTopbar() {
+    var bar = document.createElement("div");
+    bar.className = "topbar";
+
+    var brand = document.createElement("div");
+    brand.className = "brand";
+    var logo = el("span", "logo", "🎯");
+    var titleWrap = el("div");
+    titleWrap.innerHTML = '<span class="btitle">Focus Edition</span><span class="bsub">' + runtimeTitle() + "</span>";
+    brand.appendChild(logo); brand.appendChild(titleWrap);
+    brand.style.cursor = "pointer";
+    brand.title = "Go to home";
+    brand.setAttribute("role", "button");
+    brand.setAttribute("aria-label", "Go to home");
+    brand.addEventListener("click", function () { closeMenu(); renderHome(); });
+
+    var controls = el("div", "controls");
+    var menuB = el("button", "icon-btn", "☰"); menuB.title = "Menu"; menuB.setAttribute("aria-label", "Open menu"); menuB.id = "menubtn";
+    var dm = el("button", "icon-btn", "🌙"); dm.setAttribute("data-theme-btn", "true"); dm.setAttribute("aria-label", "Toggle dark mode"); dm.setAttribute("aria-pressed", "false");
+    dm.title = "Toggle dark mode (press T)";
+    controls.appendChild(menuB); controls.appendChild(dm);
+
+    var track = el("div", "progress-track");
+    track.innerHTML = '<div class="progress-fill" style="width:0%"></div>';
+    var pct = el("div", "pct-label", "0% complete");
+
+    bar.appendChild(brand);
+    var hideTrack = true; // progress track on its own row
+    bar.appendChild(controls);
+    bar.appendChild(track);
+    bar.appendChild(pct);
+
+    menuB.addEventListener("click", openMenu);
+    dm.addEventListener("click", toggleTheme);
+
+    document.body.insertBefore(bar, app);
+    document.querySelector("[data-theme-btn]").addEventListener("click", toggleTheme);
+  }
+
+  function runtimeTitle() { return "Access to Work — Focus Edition"; }
+
+  /* ---------------- keyboard ---------------- */
+  function onKey(e) {
+    if (e.key === "t" || e.key === "T") { if (ignorableTarget(e.target)) return; if (!menuEl.classList.contains("open")) toggleTheme(); }
+    if (e.key === "Escape") { if (menuEl.classList.contains("open")) { closeMenu(); } return; }
+    if (e.key === "ArrowLeft") { if (ignorableTarget(e.target) || menuEl.classList.contains("open")) return; if (current && prevOf(current)) renderMission(prevOf(current)); }
+    if (e.key === "ArrowRight") { if (ignorableTarget(e.target) || menuEl.classList.contains("open")) return; if (current && nextOf(current)) renderMission(nextOf(current)); }
+  }
+  function ignorableTarget(t) { return t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable); }
+
+  function fallbackError(err) {
+    if (app && app.innerHTML && app.innerHTML.length > 20) return; // content already rendered
+    if (app) {
+      app.innerHTML =
+        "<section class='homecard'><h2>⚠️ Something went wrong on load</h2>" +
+        "<p class='mut'>This page hit an error while starting up. Details: <code>" +
+        esc(String(err && err.message ? err.message : err)) + "</code></p>" +
+        "<p class='small mut'>If this keeps happening, try opening the file directly in a browser (double-click it, or File → Open) rather than a built-in preview.</p></section>";
+    }
+  }
+
+  function init() {
+    try {
+      load();
+      app = document.getElementById("app");
+      menuEl = document.getElementById("menu");
+      confettiEl = document.getElementById("confetti");
+      toastEl = document.getElementById("toast");
+      if (!app) return;
+      if (store.theme === "dark") document.documentElement.setAttribute("data-theme", "dark");
+      buildTopbar();
+      document.documentElement.setAttribute("data-theme", store.theme);
+      var dmBtn = document.querySelector("[data-theme-btn]");
+      if (dmBtn) { dmBtn.textContent = store.theme === "dark" ? "☀️" : "🌙"; dmBtn.setAttribute("aria-pressed", store.theme === "dark" ? "true" : "false"); }
+      menuEl.addEventListener("click", function (e) { if (e.target === menuEl) closeMenu(); });
+      document.addEventListener("keydown", onKey);
+      initialRoute();
+      updateTopbar();
+    } catch (err) { fallbackError(err); }
+  }
+
+  // Safety net: if anything throws after the app has started, surface it
+  // instead of silently leaving a blank page.
+  window.addEventListener("error", function (e) { fallbackError(e && e.error ? e.error : e.message); });
+  window.addEventListener("unhandledrejection", function (e) { fallbackError(e && e.reason ? e.reason : "unhandled rejection"); });
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3bf50b80ea13690',t:'MTc4OTU1NTg3OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
