@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Focus Edition",
+    "slug": "focus-edition",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#6D4AFF"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.focusedition.mobile",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Focus Edition uses the camera to scan and photograph physical documents, handouts, and booklets for ADHD-friendly mission extraction.",
+        "NSPhotoLibraryUsageDescription": "Focus Edition accesses photos to import images of documents and notes for OCR and mission generation.",
+        "NSSpeechRecognitionUsageDescription": "Focus Edition uses speech features for text-to-speech audio reading."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#6D4AFF"
+      },
+      "package": "app.focusedition.mobile",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.INTERNET"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/logo.png",
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "focus-edition-production-id"
+      }
+    }
+  }
+}

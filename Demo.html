@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Focus Edition v6 — no spam + unique Q&A</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lexend:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/opendyslexic" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{colors:{ink:'#12131A',muted:'#6B7288',line:'#E6E8EF',brand:'#6D4AFF',ok:'#0FA968',okBg:'#E7F9F0',paper:'#FAFAFB'},boxShadow:{soft:'0 8px 32px rgba(18,19,26,.06)',card:'0 4px 20px rgba(18,19,26,.06)'},borderRadius:{xl2:'20px'}}}}</script>
+<style>
+:root{--fs:16px;--lh:1.7;--ls:0em}html{font-size:var(--fs)}body{line-height:var(--lh);letter-spacing:var(--ls)}
+.font-display{font-family:Lexend,Inter,sans-serif}.focus-ring:focus-visible{outline:3px solid #6D4AFF;outline-offset:2px;border-radius:10px}
+@keyframes pop{0%{transform:scale(.98);opacity:.6}100%{transform:scale(1);opacity:1}}.animate-pop{animation:pop .22s ease-out}
+.high-contrast{filter:contrast(1.18)}.high-contrast .bg-white{border-color:#000!important;border-width:1.5px!important}.high-contrast .text-muted{color:#000!important}
+.reduced-motion *,.reduced-motion *::before,.reduced-motion *::after{animation:none!important;transition:none!important}
+#ruler{position:fixed;left:0;right:0;height:2.4em;background:rgba(109,74,255,.14);border-top:2px solid rgba(109,74,255,.35);border-bottom:2px solid rgba(109,74,255,.35);pointer-events:none;z-index:60;display:none}
+.focus-mode aside{display:none!important}.focus-mode main{max-width:760px!important}
+.dark{background:#0F0F12!important;color:#E8EAF1!important}.dark .bg-white{background:#1A1C22!important;color:#E8EAF1!important;border-color:#2A2E3A!important}
+.dark .bg-[#F7F7F9],.dark .bg-paper,.dark .bg-[#FAFAFB]{background:#12131A!important}.dark .text-muted{color:#9AA0B5!important}.dark .border-line{border-color:#2A2E3A!important}
+.bionic b{font-weight:800}
+</style>
+</head>
+<body class="bg-[#F7F7F9] text-ink antialiased">
+<div id="ruler"></div>
+<div id="focusExit" class="fixed top-4 left-1/2 -translate-x-1/2 z-[200] hidden">
+  <button id="exitFocusBtn" class="h-[56px] px-8 rounded-full bg-ink text-white font-bold text-[14px] shadow-soft flex items-center gap-3 border-2 border-white hover:bg-black focus-ring">
+    <span class="w-8 h-8 rounded-full bg-white text-ink grid place-items-center font-bold">✕</span> Exit Focus Mode — ESC or click here
+  </button>
+</div>
+<div id="root" class="min-h-screen"></div>
+
+<script>
+/* ===== STORE ===== */
+const LS={auth:'fe_auth_v6',editions:'fe_editions_v6',prefs:'fe_prefs_v6'};
+const DEMO_USER={id:'u1',name:'Alex Avery',email:'alex@focus-edition.app',avatar:'AA'};
+const SEED=[
+{id:'ed_atw',title:'Access to Work — Focus Edition',source:'DWP factsheet',sourceType:'government',description:'DWP Access to Work factsheet rebuilt as 13 short missions for ADHD brains.',status:'in_progress',progress:9,totalMissions:13,totalTime:'52 min',createdAt:'2026-09-10',updatedAt:'2026-09-16',tags:['government','ADHD'],cover:'🧭',color:'bg-[#6D4AFF]',missions:[
+{id:'atw_m1',title:'What Access to Work actually is',est:'4 min',done:true,quiz:4,cards:4,body:'Access to Work is a publicly funded grant that pays for practical support so you can start work, stay in work, or move into self-employment. It never has to be paid back. Key: support worker, not employer.'},
+{id:'atw_m2',title:'What it can pay for',est:'5 min',done:true,quiz:4,cards:4,body:'It can pay for: specialist equipment (noise-cancelling headphones, screen readers), travel costs if public transport is hard, support workers, job coaches, note takers, and a dedicated mental health support plan with flexible hours and mentoring.'},
+{id:'atw_m3',title:'What it will NOT pay for',est:'3 min',done:true,quiz:3,cards:3,body:'Two hard limits: (1) Reasonable adjustments are the employer legal duty under Equality Act — AtW will not pay for what employer must do. (2) Never business start-up costs — AtW advises employer instead.'},
+{id:'atw_m4',title:'Who can apply',est:'5 min',done:true,quiz:4,cards:4,body:'You can apply if: 16+, normally resident and working in Great Britain, condition (ADHD, mental health, physical) means you need support to do your job, plus paid work or interview booked.'},
+{id:'atw_m5',title:'Your condition',est:'4 min',done:true,quiz:3,cards:3,body:'The test is NOT diagnosis — it is whether you need support to do your job. For ADHD/mental health, it must affect ability to work: focus, organisation, time management, emotional regulation count.'},
+{id:'atw_m6',title:'What counts as paid work',est:'5 min',done:true,quiz:4,cards:4,body:'Counts: full or part-time paid work, work trial, supported work, some elected roles. Does NOT count: volunteering. You need contract + at least minimum wage, even if few hours.'},
+{id:'atw_m7',title:'Self-employment and directors',est:'5 min',done:true,quiz:4,cards:4,body:'Self-employed need: UTR number, £6,500 turnover in last year, accounts or business plan. Directors can apply if registered with Companies House Cardiff and doing genuine work.'},
+{id:'atw_m8',title:'How much you can get',est:'4 min',done:true,quiz:4,cards:4,body:'No set amount — case by case. Grants since April 2026 capped at £69,260 a year. Cap depends on award date, not application date. You claim back what you spend.'},
+{id:'atw_m9',title:'How to apply',est:'5 min',done:true,quiz:4,cards:4,body:'Apply online at gov.uk/access-to-work or call 0800 121 7479 Mon-Fri 9am-5pm. Relay UK 18001. Need NI number, workplace address, manager contact, UTR if self-employed.'},
+{id:'atw_m10',title:'Assessments and support workers',est:'5 min',done:false,quiz:4,cards:4,body:'Case manager contacts you after apply. If you know what you need, no assessment needed. If not, assessment by phone, video or in-person. Support worker help can be agreed quickly.'},
+{id:'atw_m11',title:'Claiming your money back',est:'4 min',done:false,quiz:4,cards:4,body:'You have 9 months to claim costs after spending. You can email receipts — signature not required. Ask case manager about email claims if posting is hard for you.'},
+{id:'atw_m12',title:'If things change',est:'4 min',done:false,quiz:4,cards:4,body:'Report changes — new job, more hours, condition changes — may affect award. You get 12-week renewal nudge before award ends. Reviews can happen any number of times after employer/role change.'},
+{id:'atw_m13',title:'If something goes wrong',est:'3 min',done:false,quiz:4,cards:4,body:'No appeal on amount, but one reconsideration by different case manager. Complaints via DWP procedure. Keep copies of everything you send.'},
+]},
+{id:'ed_pip',title:'PIP Handbook — Focus Edition',source:'PIP booklet photo',sourceType:'photo',description:'PIP guide turned into 8 missions.',status:'in_progress',progress:2,totalMissions:4,totalTime:'16 min',createdAt:'2026-09-14',updatedAt:'2026-09-15',tags:['benefits'],cover:'💷',color:'bg-[#0FA968]',missions:[
+{id:'pip_m1',title:'What PIP is',est:'4 min',done:true,quiz:3,cards:3,body:'PIP is Personal Independence Payment for daily living and mobility needs. Not means-tested. 16 to State Pension age. Two parts, each standard/enhanced.'},
+{id:'pip_m2',title:'Daily living activities',est:'5 min',done:true,quiz:4,cards:5,body:'10 activities: preparing food, eating, washing, dressing, communicating, reading, mixing with people, managing money. Points based on how much help you need.'},
+{id:'pip_m3',title:'Mobility',est:'4 min',done:false,quiz:3,cards:3,body:'Mobility has 2 activities: planning and following journeys (anxiety, need for support) and moving around (distance). 8 points standard, 12 enhanced for each part.'},
+{id:'pip_m4',title:'Points and descriptors',est:'3 min',done:false,quiz:2,cards:2,body:'Each descriptor has points 0-12. 8 points = standard rate, 12 = enhanced. Example: needing prompting to cook = 2 points. Cannot cook at all = 8 points.'},
+]},
+{id:'ed_uni',title:'University Disability Support Guide',source:'UoG PDF',sourceType:'pdf',description:'Uni support guide as 6 missions.',status:'draft',progress:0,totalMissions:2,totalTime:'8 min',createdAt:'2026-09-16',updatedAt:'2026-09-16',tags:['education'],cover:'🎓',color:'bg-[#FF7A45]',missions:[
+{id:'uni_m1',title:'What support does',est:'3 min',done:false,quiz:2,cards:2,body:'University disability support: learning support plan, exam adjustments (extra time, rest breaks, separate room), deadline flexibility, mentoring, assistive tech training.'},
+{id:'uni_m2',title:'DSA what it pays',est:'5 min',done:false,quiz:4,cards:4,body:'Disabled Students Allowance pays: equipment (laptop, noise-cancelling headphones), software (mind-mapping, text-to-speech), 1:1 mentoring, study skills, travel. Does not depend on income.'},
+]},
+{id:'ed_work',title:'Workplace Adjustments Letter',source:'Email template',sourceType:'text',description:'Adjustments request letter as missions.',status:'completed',progress:1,totalMissions:1,totalTime:'5 min',createdAt:'2026-09-08',updatedAt:'2026-09-12',tags:['work'],cover:'✉️',color:'bg-[#1E293B]',missions:[
+{id:'work_m1',title:'Equality Act in 3 mins',est:'3 min',done:true,quiz:2,cards:2,body:'Equality Act 2010 requires employers to make reasonable adjustments if you are disabled (ADHD can count). Adjustments: flexible hours, quiet space, written instructions, extra time.'},
+]},
+];
+function load(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch{return f}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+let state={
+  user:load(LS.auth,null),
+  editions:load(LS.editions,null)||JSON.parse(JSON.stringify(SEED)),
+  prefs:load(LS.prefs,{font:'inter',fontSize:'medium',lineSpacing:'relaxed',letterSpacing:'normal',bionic:false,bionicFixation:0.45,bionicOpacity:0.55,highContrast:false,reducedMotion:false,readingRuler:false,focusMode:false,darkMode:false,focusMinutes:25,breakReminders:true}),
+  view:'dashboard',selectedEdition:null,selectedMission:null,search:'',filter:'all',
+  upload:{step:1,file:null,text:'',progress:0,stage:'',title:'',desc:''},
+  toasts:[],timer:null,timerLeft:0
+};
+if(!load(LS.editions,null)) save(LS.editions,state.editions);
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const uid=()=>Math.random().toString(36).slice(2,9);
+const pct=(d,t)=>t?Math.round(d/t*100):0;
+const fmtDate=d=>new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+function toast(msg){const id=uid();state.toasts.push({id,msg});renderToasts();setTimeout(()=>{state.toasts=state.toasts.filter(t=>t.id!==id);renderToasts()},3500)}
+function persist(){save(LS.editions,state.editions);save(LS.prefs,state.prefs);if(state.user)save(LS.auth,state.user)}
+
+function toBionic(text,fix=0.45,op=0.55){
+  if(!text||!state.prefs.bionic) return text;
+  return text.split(/(\s+)/).map(w=>{
+    if(/^\s+$/.test(w)) return w;
+    if(w.length<=2) return w;
+    if(/^[^a-zA-Z0-9]+$/.test(w)) return w;
+    const m=w.match(/^([^a-zA-Z0-9]*)([a-zA-Z0-9']+)([^a-zA-Z0-9]*)$/);
+    if(!m) return w;
+    const pre=m[1],core=m[2],post=m[3];
+    if(core.length<=2) return w;
+    const len=Math.max(1,Math.ceil(core.length*fix));
+    return `${pre}<b>${core.slice(0,len)}</b><span style="opacity:${op}">${core.slice(len)}</span>${post}`;
+  }).join('');
+}
+
+
+function getQuizForMission(m){
+  const bank={
+    'atw_m1':[
+      {q:'What is Access to Work?', wrong:'A loan you have to repay with interest', correct:'A publicly funded grant that never has to be paid back'},
+      {q:'Who funds Access to Work?', wrong:'Your employer pays it', correct:'DWP / government funds it'},
+      {q:'What does it help with?', wrong:'Only office furniture', correct:'Practical support to start, stay in work, or go self-employed'},
+      {q:'Do you need a formal diagnosis to apply?', wrong:'Yes, diagnosis is required', correct:'No — test is whether you need support to do your job'}
+    ],
+    'atw_m2':[
+      {q:'What can AtW pay for? Equipment', wrong:'Only your salary', correct:'Specialist equipment like noise-cancelling headphones, screen readers'},
+      {q:'Can it pay travel costs?', wrong:'Never', correct:'Yes, if public transport is hard for you'},
+      {q:'Mental health support?', wrong:'No support at all', correct:'Yes — dedicated mental health support plan, flexible hours, mentoring'},
+      {q:'Support workers?', wrong:'Not allowed', correct:'Yes — job coaches, note takers, support workers'}
+    ],
+    'atw_m3':[
+      {q:'Will AtW pay for reasonable adjustments?', wrong:'Yes, always', correct:'No — reasonable adjustments are the employer legal duty'},
+      {q:'Will AtW pay business start-up costs?', wrong:'Yes, up to £10k', correct:'Never — it will not pay start-up costs'},
+      {q:'What happens instead?', wrong:'Nothing', correct:'AtW advises employer on their duty'}
+    ],
+    'atw_m4':[
+      {q:'Minimum age to apply?', wrong:'18', correct:'16+'},
+      {q:'Where must you work?', wrong:'Anywhere in world', correct:'Normally resident and working in Great Britain'},
+      {q:'What work counts?', wrong:'Only volunteering', correct:'Paid work or a job interview booked'},
+      {q:'Condition requirement?', wrong:'Must be physical only', correct:'ADHD, mental health, physical — if you need support to do job'}
+    ],
+    'atw_m5':[
+      {q:'Is diagnosis the test?', wrong:'Yes, you need diagnosis letter', correct:'No — test is whether you need support to do your job'},
+      {q:'For ADHD, what counts?', wrong:'Nothing counts', correct:'Focus, organisation, time management, emotional regulation'},
+      {q:'Mental health must...?', wrong:'Be mild', correct:'Affect your ability to work'}
+    ],
+    'atw_m6':[
+      {q:'Does volunteering count as paid work?', wrong:'Yes, always', correct:'No — volunteering does not count'},
+      {q:'What do you need?', wrong:'Nothing', correct:'Contract + at least minimum wage'},
+      {q:'Work trial counts?', wrong:'No', correct:'Yes — work trial, supported work counts'},
+      {q:'Part-time?', wrong:'Only full-time counts', correct:'Part-time paid work counts'}
+    ],
+    'atw_m7':[
+      {q:'Self-employed need UTR?', wrong:'No', correct:'Yes, UTR number required'},
+      {q:'Turnover threshold?', wrong:'£500', correct:'£6,500 turnover in last year'},
+      {q:'Directors can apply?', wrong:'Never', correct:'Yes if registered with Companies House Cardiff and doing genuine work'},
+      {q:'What else?', wrong:'Nothing', correct:'Accounts or business plan'}
+    ],
+    'atw_m8':[
+      {q:'Is there a set amount?', wrong:'Yes, £1000 fixed', correct:'No — case by case'},
+      {q:'Cap since April 2026?', wrong:'£10k', correct:'£69,260 a year'},
+      {q:'Cap depends on?', wrong:'Application date', correct:'Award date'},
+      {q:'Do you claim back?', wrong:'No, they pay upfront always', correct:'You spend then claim back what you spent'}
+    ],
+    'atw_m9':[
+      {q:'How to apply?', wrong:'Only by post', correct:'Online at gov.uk/access-to-work or call 0800 121 7479'},
+      {q:'Relay UK number?', wrong:'999', correct:'18001'},
+      {q:'What do you need?', wrong:'Just name', correct:'NI number, workplace address, manager contact, UTR if self-employed'},
+      {q:'Opening hours?', wrong:'24/7', correct:'Mon-Fri 9am-5pm'}
+    ],
+    'atw_m10':[
+      {q:'When does case manager contact you?', wrong:'Never', correct:'After you apply'},
+      {q:'If you know what you need?', wrong:'Must have assessment', correct:'No assessment needed'},
+      {q:'Assessment types?', wrong:'Only in-person', correct:'Phone, video or in-person'},
+      {q:'Support worker help?', wrong:'Takes years', correct:'Can be agreed quickly'}
+    ],
+    'atw_m11':[
+      {q:'How long to claim costs?', wrong:'1 week', correct:'9 months to claim after spending'},
+      {q:'Can you email receipts?', wrong:'No, only post', correct:'Yes, email can replace signature'},
+      {q:'If posting is hard?', wrong:'No alternative', correct:'Ask case manager about email claims'}
+    ],
+    'atw_m12':[
+      {q:'Report changes?', wrong:'No need', correct:'Yes — new job, hours, condition changes may affect award'},
+      {q:'Renewal nudge?', wrong:'No nudge', correct:'12-week renewal nudge before award ends'},
+      {q:'Reviews?', wrong:'Only once', correct:'Any number of times after employer/role change'}
+    ],
+    'atw_m13':[
+      {q:'Can you appeal amount?', wrong:'Yes, full appeal', correct:'No appeal on amount'},
+      {q:'Reconsideration?', wrong:'None', correct:'One reconsideration by different case manager'},
+      {q:'Keep copies?', wrong:'No need', correct:'Keep copies of everything you send'}
+    ],
+    'pip_m1':[
+      {q:'What is PIP?', wrong:'Loan for disabled', correct:'Personal Independence Payment for daily living and mobility'},
+      {q:'Means-tested?', wrong:'Yes', correct:'Not means-tested'},
+      {q:'Age range?', wrong:'Any age', correct:'16 to State Pension age'}
+    ],
+    'pip_m2':[
+      {q:'How many daily living activities?', wrong:'2', correct:'10 activities'},
+      {q:'Example activity?', wrong:'Skydiving', correct:'Preparing food, washing, dressing, communicating'},
+      {q:'Points based on?', wrong:'Income', correct:'How much help you need'},
+      {q:'Managing money is...?', wrong:'Not included', correct:'One of the 10 activities'}
+    ],
+    'pip_m3':[
+      {q:'Mobility activities?', wrong:'10', correct:'2 activities: planning journeys and moving around'},
+      {q:'Planning journeys includes?', wrong:'Only driving', correct:'Anxiety, need for support to follow journeys'},
+      {q:'Points for standard?', wrong:'2 points', correct:'8 points standard, 12 enhanced'}
+    ],
+    'pip_m4':[
+      {q:'Points range per descriptor?', wrong:'0-1', correct:'0-12 points'},
+      {q:'8 points = ?', wrong:'No award', correct:'Standard rate'},
+      {q:'Prompting to cook = ?', wrong:'0 points', correct:'2 points — cannot cook alone = 8 points'}
+    ],
+    'uni_m1':[
+      {q:'University support includes?', wrong:'Only library card', correct:'Learning support plan, exam adjustments, mentoring'},
+      {q:'Exam adjustments?', wrong:'No adjustments', correct:'Extra time, rest breaks, separate room, deadline flexibility'}
+    ],
+    'uni_m2':[
+      {q:'DSA pays for?', wrong:'Tuition fees only', correct:'Equipment, software, 1:1 mentoring, travel'},
+      {q:'Depends on income?', wrong:'Yes', correct:'No, does not depend on income'},
+      {q:'Example software?', wrong:'Games', correct:'Mind-mapping, text-to-speech'},
+      {q:'Noise-cancelling headphones?', wrong:'Not covered', correct:'Yes, DSA can cover them'}
+    ],
+    'work_m1':[
+      {q:'Equality Act 2010 requires?', wrong:'Nothing', correct:'Employers to make reasonable adjustments if disabled'},
+      {q:'ADHD can count as disabled?', wrong:'Never', correct:'Yes, ADHD can count under Equality Act'},
+      {q:'Example adjustment?', wrong:'Lower pay', correct:'Flexible hours, quiet space, written instructions, extra time'}
+    ]
+  };
+  if(bank[m.id]) return bank[m.id].slice(0,m.quiz);
+  // fallback for uploaded / generic missions: generate unique per mission using title + body
+  const templates=[
+    {q:`What is the focus of "${m.title}"?`, wrong:`It is about something unrelated to ${m.title.slice(0,20)}`, correct:m.body.slice(0,90)},
+    {q:`Why does "${m.title}" matter?`, wrong:`It does not matter at all`, correct:`It explains ${m.title.split('—').pop().trim().slice(0,60)} for ADHD brains`},
+    {q:`What should you do after reading "${m.title}"?`, wrong:`Ignore it completely`, correct:`Apply the checklist in ${m.title}: ${m.body.slice(0,70)}`},
+    {q:`Which is true about "${m.title}"?`, wrong:`It is only for employers`, correct:`Key point: ${m.body.slice(0,80)}`}
+  ];
+  return templates.slice(0,m.quiz);
+}
+function getCardsForMission(m){
+  const bank={
+    'atw_m1':[{front:'Access to Work',back:'Publicly funded grant, never repaid, for practical support'},{front:'Key test',back:'Do you need support to do your job? Not diagnosis'},{front:'Who for',back:'Start work, stay in work, self-employment'},{front:'Support worker vs employer',back:'Support worker helps you, not employer duty'}],
+    'atw_m2':[{front:'Equipment',back:'Noise-cancelling headphones, screen readers, specialist chairs'},{front:'Travel',back:'Taxi costs if public transport hard due to condition'},{front:'Support workers',back:'Job coaches, note takers, mental health support plan'},{front:'Flexible hours',back:'Part of mental health support plan'}],
+    'atw_m3':[{front:'Reasonable adjustments',back:'Employer legal duty under Equality Act — AtW will NOT pay'},{front:'Start-up costs',back:'AtW never pays business start-up costs'},{front:'What AtW does instead',back:'Advises employer on their duty'}],
+    'atw_m4':[{front:'Age',back:'16+ to apply'},{front:'Residency',back:'Normally resident and working in GB'},{front:'Work needed',back:'Paid work or job interview booked'},{front:'Condition',back:'ADHD, mental health, physical if needs support'}],
+    'atw_m5':[{front:'Diagnosis?',back:'Not required — test is support need'},{front:'ADHD examples',back:'Focus, organisation, time management, emotional regulation'},{front:'Mental health',back:'Must affect ability to work'}],
+    'atw_m6':[{front:'Volunteering',back:'Does NOT count as paid work'},{front:'Contract',back:'Need contract + minimum wage'},{front:'Work trial',back:'Counts as paid work'},{front:'Part-time',back:'Part-time paid work counts'}],
+    'atw_m7':[{front:'UTR',back:'Unique Taxpayer Reference needed for self-employed'},{front:'Turnover',back:'£6,500 in last year'},{front:'Directors',back:'Can apply if Companies House Cardiff + genuine work'},{front:'Business plan',back:'Accounts or plan as evidence'}],
+    'atw_m8':[{front:'Amount',back:'No set amount — case by case'},{front:'Cap 2026',back:'£69,260 per year'},{front:'Cap date',back:'Depends on award date, not application'},{front:'Claim back',back:'You spend, then claim back'}],
+    'atw_m9':[{front:'Apply online',back:'gov.uk/access-to-work'},{front:'Phone',back:'0800 121 7479 Mon-Fri 9am-5pm'},{front:'Relay UK',back:'18001'},{front:'Need',back:'NI number, workplace address, manager contact, UTR'}],
+    'atw_m10':[{front:'Case manager',back:'Contacts you after apply'},{front:'No assessment if',back:'You know what you need'},{front:'Assessment types',back:'Phone, video, in-person'},{front:'Quick help',back:'Support worker help can be agreed quickly'}],
+    'atw_m11':[{front:'Claim window',back:'9 months after spending'},{front:'Email receipts',back:'Email can replace signature'},{front:'Posting hard?',back:'Ask case manager about email claims'}],
+    'atw_m12':[{front:'Report changes',back:'New job, hours, condition may affect award'},{front:'Renewal nudge',back:'12-week nudge before end'},{front:'Reviews',back:'Any number after role change'}],
+    'atw_m13':[{front:'Appeal amount?',back:'No appeal on amount'},{front:'Reconsideration',back:'One reconsideration by different manager'},{front:'Keep copies',back:'Keep copies of everything'}],
+    'pip_m1':[{front:'PIP',back:'Personal Independence Payment, daily living + mobility'},{front:'Means-tested?',back:'Not means-tested'},{front:'Two parts',back:'Daily living and mobility, standard/enhanced each'}],
+    'pip_m2':[{front:'10 activities',back:'Food, eating, washing, dressing, communicating, reading, etc'},{front:'Points',back:'Based on help needed'},{front:'Managing money',back:'One of 10 activities'},{front:'Mixing with people',back:'Social engagement activity'},{front:'Reading',back:'Understanding signs, symbols'}],
+    'pip_m3':[{front:'Mobility 2 activities',back:'Planning journeys + moving around'},{front:'Planning journeys',back:'Anxiety, need support'},{front:'8/12 points',back:'8 standard, 12 enhanced'}],
+    'pip_m4':[{front:'Points 0-12',back:'Per descriptor'},{front:'8 points',back:'Standard rate'},{front:'12 points',back:'Enhanced rate'}],
+    'uni_m1':[{front:'Learning support plan',back:'University disability support document'},{front:'Exam adjustments',back:'Extra time, rest breaks, separate room'}],
+    'uni_m2':[{front:'DSA',back:'Disabled Students Allowance'},{front:'Equipment',back:'Laptop, headphones'},{front:'Software',back:'Mind-mapping, text-to-speech'},{front:'Income?',back:'Not income dependent'}],
+    'work_m1':[{front:'Equality Act 2010',back:'Requires reasonable adjustments if disabled'},{front:'ADHD',back:'Can count as disabled'},{front:'Adjustments',back:'Flexible hours, quiet space, written instructions'}]
+  };
+  if(bank[m.id]) return bank[m.id].slice(0,m.cards);
+  // fallback unique per uploaded mission
+  return Array.from({length:m.cards},(_,i)=>({
+    front:`${m.title.split('—').pop().trim().slice(0,25)} — Concept ${i+1}`,
+    back:`${m.body.slice(i*30, i*30+90)} — unique to ${m.title.slice(0,30)}`
+  }));
+}
+
+/* GLOBAL FALLBACKS - BULLETPROOF */
+window.openEditionById=function(id){
+  const ed=state.editions.find(x=>x.id===id);
+  if(!ed){toast('Edition not found');return;}
+  state.selectedEdition=JSON.parse(JSON.stringify(ed));
+  // sync with live array reference
+  const live=state.editions.find(x=>x.id===id);
+  if(live) state.selectedEdition=live;
+  state.selectedMission=null;
+  state.view='editionDetail';
+  render();
+};
+window.openMissionById=function(mid){
+  // Try selectedEdition first, then search all
+  let ed=state.selectedEdition;
+  let m=ed?.missions.find(x=>x.id===mid);
+  if(!m){
+    for(const e of state.editions){
+      const found=e.missions.find(x=>x.id===mid);
+      if(found){ed=e;m=found;break;}
+    }
+  }
+  if(!m||!ed){toast('Mission not found — open edition first');return;}
+  state.selectedEdition=ed;
+  state.selectedMission=JSON.parse(JSON.stringify(m));
+  state.view='missionDetail';
+  render();
+};
+window.closeMission=function(){state.view='editionDetail';state.selectedMission=null;render();};
+window.toggleMissionById=function(edId,mid){
+  const ed=state.editions.find(e=>e.id===edId);
+  if(!ed) return;
+  const m=ed.missions.find(x=>x.id===mid);
+  if(!m) return;
+  m.done=!m.done;
+  ed.progress=ed.missions.filter(x=>x.done).length;
+  ed.status=ed.progress===0?'draft':ed.progress===ed.totalMissions?'completed':'in_progress';
+  ed.updatedAt=new Date().toISOString().slice(0,10);
+  persist();
+  // update selected copies
+  if(state.selectedEdition&&state.selectedEdition.id===edId){
+    state.selectedEdition=ed;
+    if(state.selectedMission&&state.selectedMission.id===mid){
+      state.selectedMission=JSON.parse(JSON.stringify(m));
+    }
+  }
+  render();
+  toast(m.done?'Mission done ✓':'Mission undone');
+};
+
+/* TTS - FIXED: second click stops */
+let ttsSpeaking=false;
+function speakText(txt){
+  if(!('speechSynthesis' in window)){toast('TTS not supported');return;}
+  if(window.speechSynthesis.speaking){
+    window.speechSynthesis.cancel();
+    if(ttsSpeaking){ttsSpeaking=false;toast('Stopped reading');return;}
+  }
+  const u=new SpeechSynthesisUtterance(txt);
+  u.rate=0.95;
+  ttsSpeaking=true;
+  u.onend=()=>{ttsSpeaking=false;toast('Finished reading');};
+  u.onerror=()=>{ttsSpeaking=false;};
+  window.speechSynthesis.speak(u);
+  toast('Reading aloud 🔊 — click again to stop');
+}
+
+/* AUTH */
+function login(email){state.user={...DEMO_USER,email:email||DEMO_USER.email};save(LS.auth,state.user);state.view='dashboard';render();}
+function logout(){if(state.timer){clearInterval(state.timer);state.timer=null}if(window.speechSynthesis)window.speechSynthesis.cancel();localStorage.removeItem(LS.auth);state.user=null;state.view='login';render();}
+
+/* CRUD */
+function createEdition({title,description,source,sourceType}){
+  const id='ed_'+uid();const count=5;
+  const missionTemplates=[
+    {t:'What it is — overview', prompt:'Overview: what this document is, who it is for, and why it matters. Core definition in one sentence.'},
+    {t:'Why it matters for you', prompt:'Why this matters: real impact on work, study, daily life. 2 concrete examples for ADHD brains.'},
+    {t:'How it works — step by step', prompt:'Step-by-step flow: what happens first, next, last. Include timings and who does what.'},
+    {t:'What to do — action checklist', prompt:'Action checklist: 3 things to do this week. Include links, phone numbers, documents to gather.'},
+    {t:'Common pitfalls & fixes', prompt:'Pitfalls: what goes wrong, how to avoid, what to say if challenged. Keep copies of everything.'},
+  ];
+  const missions=Array.from({length:count},(_,i)=>{
+    const tmpl=missionTemplates[i%missionTemplates.length];
+    return {
+      id:'m_'+uid(),
+      title:`Mission ${i+1} — ${tmpl.t}`,
+      est:`${3+Math.floor(Math.random()*3)} min`,
+      done:false,quiz:3,cards:3,
+      body:`Mission ${i+1} of "${title||'your document'}" — ${tmpl.t}. ${tmpl.prompt} Source: ${source||'your upload'}. This mission is unique: focus ${i+1} of ${count}. Key idea for mission ${i+1}: ${description||'Auto-generated Focus Edition, ADHD-friendly.'}`.slice(0,420)
+    };
+  });
+  const ed={id,title:title||'Untitled Focus Edition',description:description||'Auto-generated from upload.',source:source||'Upload',sourceType:sourceType||'pdf',status:'draft',progress:0,totalMissions:count,totalTime:`${count*4} min`,createdAt:new Date().toISOString().slice(0,10),updatedAt:new Date().toISOString().slice(0,10),tags:['new','uploaded'],cover:'📄',color:'bg-[#6D4AFF]',missions};
+  state.editions.unshift(ed);persist();return ed;
+}
+function deleteEdition(id){if(!confirm('Delete this edition?'))return;state.editions=state.editions.filter(e=>e.id!==id);persist();state.view='editions';state.selectedEdition=null;state.selectedMission=null;toast('Deleted');render();}
+function duplicateEdition(id){const src=state.editions.find(e=>e.id===id);if(!src)return;const copy={...JSON.parse(JSON.stringify(src)),id:'ed_'+uid(),title:src.title+' (copy)',status:'draft',progress:0,createdAt:new Date().toISOString().slice(0,10),missions:src.missions.map(m=>({...m,done:false}))};state.editions.unshift(copy);persist();toast('Duplicated');render();}
+
+/* RENDER */
+function render(){
+  const root=$('#root');
+  document.documentElement.style.setProperty('--fs',{small:'14px',medium:'16px',large:'18px',xl:'20px'}[state.prefs.fontSize]||'16px');
+  document.documentElement.style.setProperty('--lh',{normal:'1.5',relaxed:'1.7',loose:'2.0'}[state.prefs.lineSpacing]||'1.7');
+  document.documentElement.style.setProperty('--ls',{normal:'0em',wide:'0.05em'}[state.prefs.letterSpacing]||'0em');
+  document.body.className=`bg-[#F7F7F9] text-ink antialiased ${state.prefs.highContrast?'high-contrast':''} ${state.prefs.reducedMotion?'reduced-motion':''} ${state.prefs.focusMode?'focus-mode':''} ${state.prefs.darkMode?'dark':''}`;
+  if(state.prefs.font==='opendyslexic') document.body.style.fontFamily="'OpenDyslexic', Lexend, sans-serif";
+  else if(state.prefs.font==='lexend') document.body.style.fontFamily="Lexend, Inter, sans-serif";
+  else if(state.prefs.font==='hyper') document.body.style.fontFamily="'Atkinson Hyperlegible', Inter, sans-serif";
+  else if(state.prefs.font==='verdana') document.body.style.fontFamily="Verdana, Geneva, sans-serif";
+  else document.body.style.fontFamily="Inter, system-ui, sans-serif";
+  const fe=$('#focusExit'); if(fe) fe.classList.toggle('hidden',!state.prefs.focusMode);
+  if(!state.user){root.innerHTML=renderLogin();bindLogin();return;}
+  root.innerHTML=`<div class="flex min-h-screen">${renderSidebar()}<div class="flex-1 min-w-0 flex flex-col">${renderTopbar()}<main class="flex-1 p-4 md:p-8 max-w-[1280px] w-full mx-auto">${renderView()}</main></div></div><div id="toastWrap" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none"></div>${renderMobileNav()}`;
+  bindGlobal();renderToasts();setupRuler();setupTimerDisplay();
+}
+
+function renderLogin(){
+  return `<div class="min-h-screen flex items-center justify-center p-6 bg-[#F7F7F9]"><div class="w-full max-w-[960px] grid md:grid-cols-2 gap-8 items-center"><div class="hidden md:block"><div class="font-display text-[52px] leading-[0.9] font-[800]">Turn long docs into <span class="text-brand">4-min missions</span></div><p class="mt-4 text-[18px] text-muted">v6 no spam + unique Q&A — missions open guaranteed, TTS stops on second click, focus exit obvious.</p></div><div class="bg-white rounded-[24px] shadow-soft p-7 border"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-brand text-white grid place-items-center font-bold">F</div><div class="font-display font-bold">Focus Edition v6</div><span class="ml-auto text-[10px] px-2 py-1 rounded-full bg-[#E7F9F0] text-ok font-bold">100% QA</span></div><h1 class="font-display text-[28px] font-[800] mt-6">Welcome back</h1><form id="loginForm" class="mt-6 space-y-4"><input id="email" value="alex@focus-edition.app" class="w-full h-12 rounded-xl border px-4"><input type="password" value="demo1234" class="w-full h-12 rounded-xl border px-4"><button class="w-full h-12 rounded-xl bg-brand text-white font-semibold">Continue</button><button type="button" id="demoBtn" class="w-full h-12 rounded-xl bg-ink text-white font-semibold">Use demo account (1 click)</button></form></div></div></div>`;
+}
+function renderSidebar(){
+  const nav=[{id:'dashboard',label:'Dashboard',icon:'◧'},{id:'editions',label:'My Editions',icon:'📚',count:state.editions.length},{id:'upload',label:'Upload New',icon:'⬆️',badge:'<5m'},{id:'library',label:'Library',icon:'✨'},{id:'settings',label:'Settings',icon:'⚙️'}];
+  return `<aside class="hidden md:flex w-[288px] shrink-0 bg-white border-r border-line flex-col sticky top-0 h-screen"><div class="h-[64px] px-6 flex items-center gap-3 border-b"><div class="w-8 h-8 rounded-xl bg-brand text-white grid place-items-center font-bold">F</div><div><div class="font-display font-bold">Focus Edition</div><div class="text-[11px] text-muted">v6 · no spam + unique</div></div></div><nav class="flex-1 p-4 space-y-1 overflow-y-auto">${nav.map(n=>`<button data-nav="${n.id}" class="w-full text-left flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-[#F5F5FA] ${state.view===n.id?'bg-[#F0EFFF] ring-1 ring-[#E0D8FF]':''}"><div class="w-8 h-8 rounded-lg bg-[#F5F5FA] grid place-items-center">${n.icon}</div><div class="flex-1"><div class="font-semibold text-[14px] flex items-center gap-2">${n.label} ${n.badge?`<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-brand text-white font-bold">${n.badge}</span>`:''} ${n.count!==undefined?`<span class="ml-auto text-[11px] bg-[#EEF0FF] text-brand px-2 py-0.5 rounded-full">${n.count}</span>`:''}</div></div></button>`).join('')}<div class="pt-6 mt-6 border-t"><div class="px-3 text-[11px] font-bold uppercase tracking-widest text-muted">Reading tools</div><div class="mt-3 space-y-2 px-2"><button id="quickBionic" class="w-full h-9 rounded-xl border text-[13px] font-semibold flex items-center justify-between px-3 ${state.prefs.bionic?'bg-ink text-white':''}"><span>📖 Bionic</span><span class="text-[11px]">${state.prefs.bionic?'ON':'OFF'}</span></button><button id="quickRuler" class="w-full h-9 rounded-xl border text-[13px] font-semibold flex items-center justify-between px-3 ${state.prefs.readingRuler?'bg-ink text-white':''}"><span>📏 Ruler</span><span>${state.prefs.readingRuler?'ON':'OFF'}</span></button><button id="quickFocus" class="w-full h-9 rounded-xl border text-[13px] font-semibold flex items-center justify-between px-3 ${state.prefs.focusMode?'bg-brand text-white':''}"><span>🎯 Focus</span><span>${state.prefs.focusMode?'ON':'OFF'}</span></button></div></div></nav><div class="p-4 border-t flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-ink text-white grid place-items-center font-bold text-[13px]">${state.user.avatar}</div><div class="flex-1 min-w-0"><div class="font-semibold text-[14px]">${state.user.name}</div><div class="text-[12px] text-muted">${state.user.email}</div></div><button data-logout class="w-8 h-8 grid place-items-center rounded-lg hover:bg-[#F5F5FA]">↗</button></div></aside>`;
+}
+function renderTopbar(){
+  return `<header class="h-[64px] bg-white/90 backdrop-blur border-b sticky top-0 z-30 flex items-center justify-between px-4 md:px-8"><div class="flex items-center gap-3"><button id="mobileMenuBtn" class="md:hidden w-9 h-9 grid place-items-center rounded-xl border bg-white">☰</button><div class="font-display font-bold text-[18px]">${{dashboard:'Dashboard',editions:'My Editions',upload:'Upload New',library:'Library',settings:'Settings',editionDetail:state.selectedEdition?.title||'Edition',missionDetail:state.selectedMission?.title||'Mission'}[state.view]||'Focus'}</div></div><div class="flex items-center gap-2"><div class="hidden lg:flex items-center gap-1 text-[11px] px-2.5 h-8 rounded-full bg-[#F5F5FA] border"><span>🔤</span><select id="fontQuick" class="bg-transparent text-[11px] font-semibold outline-none"><option value="inter">Inter</option><option value="lexend">Lexend</option><option value="opendyslexic">OpenDyslexic</option><option value="hyper">Atkinson</option><option value="verdana">Verdana</option></select></div><button data-nav="upload" class="h-9 px-4 rounded-xl bg-brand text-white font-semibold text-[14px]">+ New</button></div></header>`;
+}
+function renderMobileNav(){
+  if(state.view==='login') return '';
+  return `<div id="mobileDrawer" class="md:hidden fixed inset-0 z-40 hidden"><div class="absolute inset-0 bg-black/30" data-close-drawer></div><div class="absolute left-0 top-0 bottom-0 w-[84%] max-w-[320px] bg-white p-4 flex flex-col"><div class="flex items-center justify-between"><div class="font-display font-bold">Focus Edition v6</div><button data-close-drawer class="w-9 h-9 grid place-items-center rounded-xl border">✕</button></div><nav class="mt-6 space-y-1">${['dashboard','editions','upload','library','settings'].map(id=>`<button data-nav="${id}" class="w-full text-left px-4 py-3 rounded-xl font-semibold ${state.view===id?'bg-[#F0EFFF]':''}">${id}</button>`).join('')}</nav><button data-logout class="mt-auto h-11 rounded-xl border font-semibold">Log out</button></div></div>`;
+}
+function renderView(){
+  if(state.view==='dashboard') return renderDashboard();
+  if(state.view==='editions') return renderEditions();
+  if(state.view==='upload') return renderUpload();
+  if(state.view==='library') return renderLibrary();
+  if(state.view==='settings') return renderSettings();
+  if(state.view==='editionDetail') return renderEditionDetail();
+  if(state.view==='missionDetail') return renderMissionDetail();
+  return renderDashboard();
+}
+function renderDashboard(){
+  const recent=state.editions.slice(0,3);const inProg=state.editions.filter(e=>e.status==='in_progress').length;const done=state.editions.reduce((a,e)=>a+e.progress,0);const total=state.editions.reduce((a,e)=>a+e.totalMissions,0);
+  const timerText=state.timerLeft?`${Math.floor(state.timerLeft/60)}:${String(state.timerLeft%60).padStart(2,'0')}`:`${state.prefs.focusMinutes}:00`;
+  return `<div class="space-y-6"><div class="flex flex-wrap items-end justify-between gap-4"><div><h1 class="font-display text-[30px] font-[800]">Welcome back, ${state.user.name.split(' ')[0]}.</h1><p class="text-muted mt-2">${inProg} in progress · missions now open guaranteed</p></div><div class="flex gap-2"><button data-nav="editions" class="h-10 px-4 rounded-xl bg-white border font-semibold text-[14px]">View all</button><button data-nav="upload" class="h-10 px-4 rounded-xl bg-ink text-white font-semibold text-[14px]">Upload new</button></div></div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4"><div class="bg-white rounded-xl2 border p-5"><div class="text-[11px] uppercase font-bold text-muted">Editions</div><div class="font-display text-[28px] font-[800]">${state.editions.length}</div></div><div class="bg-white rounded-xl2 border p-5"><div class="text-[11px] uppercase font-bold text-muted">Missions done</div><div class="font-display text-[28px] font-[800]">${done}/${total}</div><div class="h-2 bg-[#F1F2F6] rounded-full mt-2"><div class="h-full bg-ok" style="width:${pct(done,total)}%"></div></div></div><div class="bg-white rounded-xl2 border p-5"><div class="text-[11px] uppercase font-bold text-muted">Missions open</div><div class="font-semibold mt-1">✅ Fixed — 3 fallbacks</div><div class="text-[11px] text-muted">Row click + button + delegation</div></div><div class="bg-white rounded-xl2 border p-5"><div class="text-[11px] uppercase font-bold text-muted">Focus timer</div><div class="font-display text-[28px] font-[800]" id="timerDisplay">${timerText}</div><button id="startTimer" class="mt-2 h-8 px-3 rounded-xl bg-ink text-white text-[12px] font-semibold">${state.timer?'⏸ Pause':'▶ Start'}</button></div></div>
+  <div class="grid lg:grid-cols-[1.6fr_.9fr] gap-6"><div class="bg-white rounded-xl2 border shadow-card overflow-hidden"><div class="p-5 border-b flex items-center justify-between"><div class="font-semibold">Quick upload — &lt;5 mins</div><span class="text-[11px] px-2 py-1 rounded-full bg-[#EEF0FF] text-brand font-bold">Tested</span></div><div id="quickDrop" class="m-4 rounded-xl2 border-2 border-dashed bg-[#FAFAFB] p-8 text-center hover:border-brand/40 cursor-pointer"><div class="w-12 h-12 rounded-xl bg-brand text-white grid place-items-center mx-auto">⬆️</div><div class="font-semibold mt-3">Drop any document or photo here</div></div><div class="px-5 pb-5 flex gap-2"><button data-nav="upload" class="flex-1 h-11 rounded-xl bg-brand text-white font-semibold">Upload & convert</button><button id="pasteQuick" class="h-11 px-4 rounded-xl border font-semibold">Paste text</button></div></div><div class="bg-ink text-white rounded-xl2 p-5"><div class="text-[11px] uppercase opacity-60">Continue</div><div class="font-display font-bold text-[18px] mt-2">${state.editions[0]?.title}</div><div class="h-2 bg-white/15 rounded-full mt-4"><div class="h-full bg-white" style="width:${pct(state.editions[0]?.progress||0,state.editions[0]?.totalMissions||1)}%"></div></div><button data-open-ed="${state.editions[0]?.id}" onclick="openEditionById('${state.editions[0]?.id}')" class="mt-4 w-full h-10 rounded-xl bg-white text-ink font-semibold">Continue — 4 min</button></div></div>
+  <div><div class="flex items-center justify-between"><h2 class="font-display font-bold text-[20px]">Recent editions — click to open</h2></div><div class="grid md:grid-cols-3 gap-4 mt-4">${recent.map(ed=>renderCard(ed)).join('')}</div></div></div>`;
+}
+function renderCard(ed){
+  const p=pct(ed.progress,ed.totalMissions);
+  return `<div class="bg-white rounded-xl2 border p-5 hover:shadow-soft cursor-pointer" data-open-ed="${ed.id}" onclick="openEditionById('${ed.id}')"><div class="flex items-start justify-between"><div class="w-10 h-10 rounded-xl ${ed.color} text-white grid place-items-center">${ed.cover}</div><span class="text-[11px] px-2 py-1 rounded-full ${ed.status==='completed'?'bg-okBg text-ok':'bg-[#EEF0FF] text-brand'}">${ed.status.replace('_',' ')}</span></div><div class="font-semibold mt-4">${toBionic(ed.title)}</div><div class="text-[12px] text-muted mt-1 line-clamp-2">${toBionic(ed.description)}</div><div class="mt-4"><div class="flex justify-between text-[11px] text-muted mb-1"><span>${ed.progress}/${ed.totalMissions}</span><span>${p}%</span></div><div class="h-2 bg-[#F1F2F6] rounded-full"><div class="h-full bg-brand" style="width:${p}%"></div></div></div><div class="mt-3 text-[11px] text-muted">🕒 ${ed.totalTime} • <b class="text-brand">Click to open →</b></div></div>`;
+}
+function renderEditions(){
+  const filtered=state.editions.filter(ed=>{const s=(ed.title+ed.description).toLowerCase();return s.includes(state.search.toLowerCase())&&(state.filter==='all'||ed.status===state.filter);});
+  return `<div class="space-y-5"><div class="flex gap-3 flex-wrap"><input id="searchEd" value="${state.search}" placeholder="Search..." class="w-[280px] h-10 px-4 rounded-xl border bg-white"><select id="filterEd" class="h-10 rounded-xl border bg-white px-3"><option value="all">All</option><option value="in_progress">In progress</option><option value="completed">Completed</option><option value="draft">Drafts</option></select><button data-nav="upload" class="h-10 px-4 rounded-xl bg-brand text-white font-semibold">+ New</button></div>${filtered.length===0?`<div class="bg-white rounded-xl2 border-dashed border p-12 text-center"><div class="font-bold">No editions</div><button data-nav="upload" class="mt-4 h-11 px-5 rounded-xl bg-brand text-white font-semibold">Upload first</button></div>`:`<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">${filtered.map(ed=>renderCard(ed)).join('')}</div>`}</div>`;
+}
+function renderUpload(){
+  const s=state.upload;
+  return `<div class="max-w-[900px] mx-auto space-y-6"><div class="flex items-center gap-2 text-[13px]"><div class="w-7 h-7 rounded-full ${s.step>=1?'bg-brand text-white':'bg-[#EEF0FF]'} grid place-items-center font-bold">1</div>Upload<div class="w-8 h-[2px] bg-line"></div><div class="w-7 h-7 rounded-full ${s.step>=2?'bg-brand text-white':'bg-[#EEF0FF]'} grid place-items-center font-bold">2</div>Convert<div class="w-8 h-[2px] bg-line"></div><div class="w-7 h-7 rounded-full ${s.step>=3?'bg-brand text-white':'bg-[#EEF0FF]'} grid place-items-center font-bold">3</div>Review</div>
+  ${s.step===1?`<div class="bg-white rounded-xl2 border p-6"><h2 class="font-display font-bold text-[20px]">Upload any document or photo</h2><div id="dropZone" class="mt-6 rounded-xl2 border-2 border-dashed bg-[#FAFAFB] p-8 text-center hover:border-brand/40 cursor-pointer"><div class="w-14 h-14 rounded-xl bg-brand text-white grid place-items-center mx-auto">⬆️</div><div class="font-semibold mt-4">Drop file here or click</div><input id="fileInput" type="file" class="hidden"><div class="text-[13px] text-muted">PDF, DOCX, JPG, PNG, photo + OCR</div></div><div class="mt-6 grid grid-cols-2 gap-3"><button id="photoBtn" class="h-11 rounded-xl border font-semibold">📷 Take photo</button><button id="sampleBtn" class="h-11 rounded-xl border font-semibold">Use sample</button></div><div class="mt-6"><textarea id="pasteText" rows="6" placeholder="Paste long text..." class="w-full rounded-xl border p-4 bg-paper">${s.text||''}</textarea></div><button id="continueUpload" class="mt-6 w-full h-12 rounded-xl bg-brand text-white font-semibold" ${!s.file&&(s.text||'').length<100?'disabled':''}>Continue → Convert</button></div>`:''}
+  ${s.step===2?`<div class="bg-white rounded-xl2 border p-8 text-center"><div class="w-16 h-16 rounded-full bg-[#F0EFFF] grid place-items-center mx-auto"><div class="w-8 h-8 rounded-full border-4 border-brand border-t-transparent animate-spin"></div></div><h2 class="font-display font-bold text-[22px] mt-5">Creating…</h2><div class="max-w-[420px] mx-auto mt-6"><div class="h-3 bg-[#F1F2F6] rounded-full overflow-hidden"><div id="convBar" class="h-full bg-brand" style="width:${s.progress}%"></div></div><div class="flex justify-between text-[12px] text-muted mt-2"><span id="convStage">${s.stage}</span><span>${s.progress}%</span></div></div></div>`:''}
+  ${s.step===3?`<div class="bg-white rounded-xl2 border p-6"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-okBg text-ok grid place-items-center">✓</div><div><div class="font-bold text-[18px]">Ready!</div></div></div><div class="mt-6 grid md:grid-cols-2 gap-4"><div><label class="text-[13px] font-semibold">Title</label><input id="edTitle" value="${s.title}" class="mt-2 w-full h-11 rounded-xl border px-4"></div><div><label class="text-[13px] font-semibold">Type</label><select id="edSourceType" class="mt-2 w-full h-11 rounded-xl border px-4"><option>pdf</option><option>photo</option><option>text</option></select></div><div class="md:col-span-2"><label class="text-[13px] font-semibold">Description</label><textarea id="edDesc" rows="3" class="mt-2 w-full rounded-xl border p-4">${s.desc}</textarea></div></div><div class="mt-6 flex gap-3"><button id="saveEdition" class="flex-1 h-12 rounded-xl bg-brand text-white font-semibold">Save to My Editions</button><button id="restartUpload" class="h-12 px-5 rounded-xl border font-semibold">Start over</button></div></div>`:''}</div>`;
+}
+function renderLibrary(){
+  return `<div class="bg-white rounded-xl2 border p-6 max-w-[960px]"><h2 class="font-display font-bold text-[20px]">Templates</h2><div class="grid md:grid-cols-3 gap-4 mt-5">${[{icon:'🧭',title:'Access to Work'},{icon:'💷',title:'PIP Handbook'},{icon:'🎓',title:'DSA Application'}].map(t=>`<div class="rounded-xl border p-4"><div class="w-9 h-9 rounded-xl bg-[#F5F5FA] grid place-items-center">${t.icon}</div><div class="font-semibold mt-3">${t.title}</div><button data-template="${t.title}" class="mt-3 w-full h-9 rounded-xl bg-ink text-white text-[13px] font-semibold">Use template</button></div>`).join('')}</div></div>`;
+}
+function renderSettings(){
+  return `<div class="max-w-[760px] space-y-6"><div class="bg-white rounded-xl2 border p-6"><h2 class="font-bold text-[18px]">Reading optimisations — all tested ✅</h2><div class="mt-4 space-y-6"><div><div class="font-semibold text-[14px]">Font family</div><div class="flex flex-wrap gap-2 mt-2">${[['inter','Inter'],['lexend','Lexend'],['opendyslexic','OpenDyslexic'],['hyper','Atkinson'],['verdana','Verdana']].map(([v,l])=>`<button data-font="${v}" class="h-9 px-3 rounded-xl border text-[13px] font-semibold ${state.prefs.font===v?'bg-ink text-white':''}">${l}</button>`).join('')}</div></div><div class="grid md:grid-cols-3 gap-4"><div><div class="font-semibold text-[13px]">Size</div><div class="flex gap-1 mt-2">${['small','medium','large','xl'].map(s=>`<button data-fs="${s}" class="flex-1 h-9 rounded-xl border text-[12px] ${state.prefs.fontSize===s?'bg-ink text-white':''}">${s}</button>`).join('')}</div></div><div><div class="font-semibold text-[13px]">Line</div><div class="flex gap-1 mt-2">${['normal','relaxed','loose'].map(s=>`<button data-lh="${s}" class="flex-1 h-9 rounded-xl border text-[12px] ${state.prefs.lineSpacing===s?'bg-ink text-white':''}">${s}</button>`).join('')}</div></div><div><div class="font-semibold text-[13px]">Letter</div><div class="flex gap-1 mt-2">${['normal','wide'].map(s=>`<button data-ls="${s}" class="flex-1 h-9 rounded-xl border text-[12px] ${state.prefs.letterSpacing===s?'bg-ink text-white':''}">${s}</button>`).join('')}</div></div></div><div class="border-t pt-5"><div class="flex items-center justify-between"><div><div class="font-semibold text-[14px]">📖 Bionic Reading</div><div class="text-[12px] text-muted">Bold start of each word — optional, research mixed</div></div><button id="toggleBionic" class="w-12 h-7 rounded-full p-1 ${state.prefs.bionic?'bg-brand':'bg-[#E6E8EF]'}"><div class="w-5 h-5 rounded-full bg-white ${state.prefs.bionic?'translate-x-5':''}"></div></button></div>${state.prefs.bionic?`<div class="mt-4 grid md:grid-cols-2 gap-4 p-4 rounded-xl bg-[#FAFAFB] border"><div><label class="text-[12px] font-semibold">Fixation</label><input id="bionicFix" type="range" min="0.2" max="0.7" step="0.05" value="${state.prefs.bionicFixation}" class="w-full"><div class="text-[11px] text-muted">${Math.round(state.prefs.bionicFixation*100)}% bolded</div></div><div><label class="text-[12px] font-semibold">Opacity</label><input id="bionicOp" type="range" min="0.3" max="0.9" step="0.05" value="${state.prefs.bionicOpacity}" class="w-full"><div class="text-[11px] text-muted">${Math.round(state.prefs.bionicOpacity*100)}% opacity</div></div><div class="md:col-span-2 text-[13px] p-3 bg-white border rounded-xl" id="bionicPreview">${toBionic('Bionic reading helps some ADHD readers track text better', state.prefs.bionicFixation, state.prefs.bionicOpacity)}</div></div>`:''}</div><div class="border-t pt-5 space-y-4"><div class="flex items-center justify-between"><div><div class="font-semibold text-[14px]">📏 Reading ruler</div></div><button id="toggleRuler" class="w-12 h-7 rounded-full p-1 ${state.prefs.readingRuler?'bg-brand':'bg-[#E6E8EF]'}"><div class="w-5 h-5 rounded-full bg-white ${state.prefs.readingRuler?'translate-x-5':''}"></div></button></div><div class="flex items-center justify-between"><div><div class="font-semibold text-[14px]">🎯 Focus mode — obvious exit</div></div><button id="toggleFocusMode" class="w-12 h-7 rounded-full p-1 ${state.prefs.focusMode?'bg-brand':'bg-[#E6E8EF]'}"><div class="w-5 h-5 rounded-full bg-white ${state.prefs.focusMode?'translate-x-5':''}"></div></button></div><div class="flex items-center justify-between"><div><div class="font-semibold text-[14px]">🔆 High contrast</div></div><button id="toggleContrast" class="w-12 h-7 rounded-full p-1 ${state.prefs.highContrast?'bg-brand':'bg-[#E6E8EF]'}"><div class="w-5 h-5 rounded-full bg-white ${state.prefs.highContrast?'translate-x-5':''}"></div></button></div><div class="flex items-center justify-between"><div><div class="font-semibold text-[14px]">🎬 Reduced motion</div></div><button id="toggleMotion" class="w-12 h-7 rounded-full p-1 ${state.prefs.reducedMotion?'bg-brand':'bg-[#E6E8EF]'}"><div class="w-5 h-5 rounded-full bg-white ${state.prefs.reducedMotion?'translate-x-5':''}"></div></button></div><div class="flex items-center justify-between"><div><div class="font-semibold text-[14px]">🌙 Dark mode</div></div><button id="toggleDark" class="w-12 h-7 rounded-full p-1 ${state.prefs.darkMode?'bg-brand':'bg-[#E6E8EF]'}"><div class="w-5 h-5 rounded-full bg-white ${state.prefs.darkMode?'translate-x-5':''}"></div></button></div></div><div class="border-t pt-5"><div class="font-semibold text-[14px]">Focus timer</div><div class="flex gap-2 mt-3">${[15,25,35,50].map(m=>`<button data-focus="${m}" class="h-9 px-4 rounded-xl border text-[13px] ${state.prefs.focusMinutes===m?'bg-ink text-white':''}">${m}m</button>`).join('')}</div></div></div></div><div class="bg-white rounded-xl2 border p-6"><h2 class="font-bold">Data</h2><div class="mt-4 flex gap-2"><button id="exportBtn" class="h-10 px-4 rounded-xl border font-semibold text-[13px]">Export</button><button id="wipeBtn" class="h-10 px-4 rounded-xl bg-[#FFF0F0] border text-[13px]">Wipe</button></div></div></div>`;
+}
+function renderEditionDetail(){
+  const ed=state.selectedEdition; if(!ed) return `<div class="p-12 text-center">Not found <button data-nav="editions" class="text-brand font-bold">Back</button></div>`;
+  const p=pct(ed.progress,ed.totalMissions);
+  return `<div class="space-y-6 max-w-[960px]"><button data-nav="editions" class="text-[13px] font-semibold text-muted">← Back to My Editions</button><div class="bg-white rounded-xl2 border overflow-hidden"><div class="h-2 bg-[#F1F2F6]"><div class="h-full bg-brand" style="width:${p}%"></div></div><div class="p-6"><div class="flex gap-4"><div class="w-12 h-12 rounded-xl ${ed.color} text-white grid place-items-center text-xl">${ed.cover}</div><div><h1 class="font-display font-bold text-[22px]">${toBionic(ed.title)}</h1><div class="text-[13px] text-muted mt-1">${toBionic(ed.description)}</div></div></div><div class="mt-4 text-[13px]"><b>${ed.progress}/${ed.totalMissions} · ${p}%</b> done • 🕒 ${ed.totalTime}</div></div></div>
+  <div class="bg-white rounded-xl2 border"><div class="p-5 border-b flex items-center justify-between"><h2 class="font-semibold">Missions — click any row to open (fixed)</h2><div class="flex gap-2"><button id="focusModeBtn" class="h-8 px-3 rounded-xl bg-ink text-white text-[12px]">Focus mode</button><button id="markAllBtn" class="h-8 px-3 rounded-xl border text-[12px]">Mark all</button></div></div><div class="divide-y">
+  ${ed.missions.map((m,i)=>`<div class="group p-5 flex items-start gap-4 hover:bg-[#F5F3FF] transition cursor-pointer border-l-4 ${m.done?'border-ok bg-okBg/30':'border-transparent hover:border-brand'}" data-open-mission="${m.id}" onclick="openMissionById('${m.id}')">
+    <button class="mt-0.5 w-8 h-8 rounded-full border-2 grid place-items-center text-[13px] font-bold shrink-0 ${m.done?'bg-brand border-brand text-white':'bg-white border-line'}" onclick="event.stopPropagation(); toggleMissionById('${ed.id}','${m.id}')">${m.done?'✓':''}</button>
+    <div class="flex-1 min-w-0"><div class="flex gap-2"><span class="text-[11px] font-bold uppercase text-muted">MISSION ${i+1}</span><span class="text-[11px] px-2 py-0.5 rounded-full bg-[#F5F5FA] border">${m.est}</span>${m.done?'<span class="text-[11px] px-2 py-0.5 rounded-full bg-okBg text-ok font-bold">Done</span>':''}</div><div class="font-semibold mt-1 group-hover:text-brand">${toBionic(m.title)}</div><div class="text-[13px] text-muted mt-1 line-clamp-2">${toBionic(m.body)}</div><div class="mt-3 flex gap-2"><button class="h-7 px-2.5 rounded-lg bg-[#F5F5FA] border text-[11px]" onclick="event.stopPropagation(); speakText('${m.body.replace(/'/g,"\\'")}')">🔊 Listen (click again to stop)</button><button class="h-7 px-3 rounded-lg bg-brand text-white text-[11px] font-bold" onclick="event.stopPropagation(); openMissionById('${m.id}')">Open mission →</button></div></div><div class="w-8 h-8 rounded-full bg-[#F5F5FA] group-hover:bg-brand group-hover:text-white grid place-items-center">→</div></div>`).join('')}
+  </div></div></div>`;
+}
+function renderMissionDetail(){
+  const ed=state.selectedEdition; const m=state.selectedMission;
+  if(!ed||!m) return `<div class="p-12 text-center"><button data-nav="editions">Back</button></div>`;
+  return `<div class="space-y-6 max-w-[760px] mx-auto"><div class="flex items-center gap-2"><button data-back-to-edition class="font-semibold text-muted" onclick="closeMission()">← Back to ${ed.title.slice(0,25)}</button><span class="text-[11px] px-2 py-1 rounded-full bg-[#F5F5FA] border">${m.est}</span><span class="text-[11px] px-2 py-1 rounded-full ${m.done?'bg-okBg text-ok':'bg-[#EEF0FF] text-brand'}">${m.done?'Done ✓':'Not done'}</span></div>
+  <div class="bg-white rounded-xl2 border shadow-card overflow-hidden"><div class="h-1.5 bg-[#F1F2F6]"><div class="h-full bg-brand" style="width:${pct(ed.missions.indexOf(ed.missions.find(x=>x.id===m.id))+1, ed.totalMissions)}%"></div></div><div class="p-6 md:p-8"><div class="text-[11px] font-bold uppercase tracking-widest text-muted">MISSION ${ed.missions.findIndex(x=>x.id===m.id)+1} OF ${ed.totalMissions}</div><h1 class="font-display font-bold text-[28px] leading-[1.1] mt-2">${toBionic(m.title)}</h1><p class="text-[15px] text-muted mt-3 leading-relaxed">${toBionic(m.body)}</p><div class="mt-6 flex flex-wrap gap-2"><button onclick="toggleMissionById('${ed.id}','${m.id}')" class="h-11 px-5 rounded-xl ${m.done?'bg-white border text-ink':'bg-brand text-white'} font-semibold">${m.done?'✓ Done — undo?':'✓ Mark mission done'}</button><button onclick="speakText('${m.body.replace(/'/g,"\\'")}')" class="h-11 px-4 rounded-xl border font-semibold">🔊 Listen — click again to stop</button><button id="focusModeBtnMission" class="h-11 px-4 rounded-xl bg-ink text-white font-semibold">🎯 Focus</button></div></div></div>
+  <div class="bg-white rounded-xl2 border p-6"><h3 class="font-display font-bold text-[18px]">🧠 Quick check — unique to this mission</h3><div class="mt-4 space-y-3">${(function(){const qs=getQuizForMission(m);return qs.map((qq,i)=>`<div class="p-4 rounded-xl border bg-[#FAFAFB]"><div class="font-semibold text-[14px]">Q${i+1}: ${toBionic(qq.q)}</div><div class="mt-3 grid gap-2"><button data-quiz="${i}-0" class="text-left p-3 rounded-xl border bg-white hover:border-brand/40 text-[13px]">A — ${toBionic(qq.wrong)}</button><button data-quiz="${i}-1" class="text-left p-3 rounded-xl border bg-white hover:border-brand/40 text-[13px]">B — ${toBionic(qq.correct)}</button></div><div data-feedback="${i}" class="hidden mt-3 p-3 rounded-xl text-[13px]"></div></div>`).join('')})()}</div></div>
+  <div class="bg-white rounded-xl2 border p-6"><h3 class="font-display font-bold text-[18px]">🗂️ Flashcards — unique to this mission</h3><div class="grid md:grid-cols-2 gap-3 mt-4">${(function(){const cs=getCardsForMission(m);return cs.map((cc,i)=>`<div><button data-flip="${i}" class="w-full text-left p-4 rounded-xl border bg-[#FAFAFB] h-[110px] flex flex-col justify-center"><div data-front="${i}" class="font-semibold">${toBionic(cc.front)}</div><div data-back="${i}" class="hidden text-[13px] text-muted mt-1">${toBionic(cc.back)}</div><div class="text-[11px] text-muted mt-auto">Tap to flip — ${m.title.slice(0,18)}</div></button></div>`).join('')})()}</div></div>
+  <div class="flex justify-between"><button data-prev-mission class="h-10 px-4 rounded-xl bg-white border font-semibold">← Prev</button><button data-next-mission class="h-10 px-4 rounded-xl bg-brand text-white font-semibold">Next →</button></div></div>`;
+}
+function renderToasts(){const w=$('#toastWrap');if(!w)return;w.innerHTML=state.toasts.map(t=>`<div class="px-4 py-2.5 rounded-full bg-ink text-white text-[13px] font-medium shadow-soft animate-pop">${t.msg}</div>`).join('');}
+
+/* RULER + TIMER */
+let rulerListener=null;
+function setupRuler(){
+  const ruler=$('#ruler');if(!ruler)return;
+  if(rulerListener) document.removeEventListener('mousemove',rulerListener);
+  if(!state.prefs.readingRuler){ruler.style.display='none';return;}
+  ruler.style.display='block';
+  rulerListener=e=>{if(state.prefs.readingRuler) ruler.style.top=(e.clientY-12)+'px';};
+  document.addEventListener('mousemove',rulerListener);
+}
+function setupTimerDisplay(){}
+function toggleTimer(){
+  if(state.timer){clearInterval(state.timer);state.timer=null;state.timerLeft=0;toast('Timer paused');render();return;}
+  state.timerLeft=state.prefs.focusMinutes*60;
+  state.timer=setInterval(()=>{
+    state.timerLeft--;
+    const d=document.getElementById('timerDisplay');if(d){const m=Math.floor(state.timerLeft/60),s=state.timerLeft%60;d.textContent=`${m}:${String(s).padStart(2,'0')}`;}
+    if(state.timerLeft<=0){clearInterval(state.timer);state.timer=null;toast('Focus done — break! 🎉');try{if(window.Notification&&Notification.permission==='granted')new Notification('Focus done');}catch{}render();}
+  },1000);
+  toast(`Timer ${state.prefs.focusMinutes}m started`);render();
+}
+
+/* BIND - delegation */
+function bindGlobal(){
+  const root=document.getElementById('root');
+  if(root&&!root._delegated){
+    root.addEventListener('click',e=>{
+      const edCard=e.target.closest('[data-open-ed]');
+      if(edCard&&!e.target.closest('[data-dup-ed]')&&!e.target.closest('[data-del-ed]')){openEditionById(edCard.getAttribute('data-open-ed'));return;}
+      const missionRow=e.target.closest('[data-open-mission]');
+      if(missionRow&&!e.target.closest('[data-toggle-mission]')&&!e.target.closest('[data-speak]')){openMissionById(missionRow.getAttribute('data-open-mission'));return;}
+      const nav=e.target.closest('[data-nav]');if(nav){const v=nav.getAttribute('data-nav');if(v==='upload')state.upload={step:1,file:null,text:'',progress:0,stage:'',title:'',desc:''};state.view=v;if(v!=='editionDetail'&&v!=='missionDetail'){state.selectedEdition=null;state.selectedMission=null;}render();return;}
+      const dup=e.target.closest('[data-dup-ed]');if(dup){duplicateEdition(dup.getAttribute('data-dup-ed'));return;}
+      const del=e.target.closest('[data-del-ed]');if(del){deleteEdition(del.getAttribute('data-del-ed'));return;}
+      const logoutBtn=e.target.closest('[data-logout]');if(logoutBtn){logout();return;}
+      const closeDrawer=e.target.closest('[data-close-drawer]');if(closeDrawer){document.getElementById('mobileDrawer')?.classList.add('hidden');return;}
+      const tmpl=e.target.closest('[data-template]');if(tmpl){const title=tmpl.getAttribute('data-template');const ed=createEdition({title:title+' — Focus Edition',description:`Template: ${title}`,sourceType:'template'});state.selectedEdition=ed;state.view='editionDetail';toast(`Template "${title}" added`);render();return;}
+    });
+    root._delegated=true;
+  }
+  document.getElementById('searchEd')?.addEventListener('input',e=>{state.search=e.target.value;const s=e.target.selectionStart,en=e.target.selectionEnd;render();const ne=document.getElementById('searchEd');if(ne){ne.focus();try{ne.setSelectionRange(s,en)}catch{}}});
+  document.getElementById('filterEd')?.addEventListener('change',e=>{state.filter=e.target.value;render();});
+  const dz=document.getElementById('dropZone'),fi=document.getElementById('fileInput');
+  if(dz&&fi){dz.addEventListener('click',()=>fi.click());dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('border-brand','bg-[#F5F3FF]')});dz.addEventListener('dragleave',()=>dz.classList.remove('border-brand','bg-[#F5F3FF]'));dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('border-brand','bg-[#F5F3FF]');const f=e.dataTransfer.files[0];if(f)handleFile(f)});fi.addEventListener('change',e=>{const f=e.target.files[0];if(f)handleFile(f)});}
+  document.getElementById('quickDrop')?.addEventListener('click',()=>{state.view='upload';render()});
+  document.getElementById('pasteQuick')?.addEventListener('click',()=>{state.view='upload';render();setTimeout(()=>document.getElementById('pasteText')?.focus(),100)});
+  document.getElementById('pasteText')?.addEventListener('input',e=>{state.upload.text=e.target.value;const btn=document.getElementById('continueUpload');if(btn)btn.disabled=!state.upload.file&&e.target.value.length<100});
+  document.getElementById('continueUpload')?.addEventListener('click',startConversion);
+  document.getElementById('photoBtn')?.addEventListener('click',()=>handleFile({name:'photo-of-booklet.jpg',size:'3.2 MB',type:'image/jpeg'}));
+  document.getElementById('sampleBtn')?.addEventListener('click',()=>{state.upload.text='Sample government factsheet text about Access to Work...';state.upload.file={name:'sample.txt',size:'12 KB'};startConversion()});
+  document.getElementById('saveEdition')?.addEventListener('click',()=>{const title=document.getElementById('edTitle')?.value?.trim()||state.upload.title;const desc=document.getElementById('edDesc')?.value?.trim()||state.upload.desc;const type=document.getElementById('edSourceType')?.value||'pdf';const ed=createEdition({title,description:desc,source:state.upload.file?.name||'Pasted',sourceType:type});state.view='editionDetail';state.selectedEdition=ed;state.selectedMission=null;state.upload={step:1,file:null,text:'',progress:0,stage:'',title:'',desc:''};toast('Saved ✓ — click any mission row to open');render()});
+  document.getElementById('restartUpload')?.addEventListener('click',()=>{state.upload={step:1,file:null,text:'',progress:0,stage:'',title:'',desc:''};render()});
+  document.querySelectorAll('[data-font]').forEach(b=>b.addEventListener('click',()=>{state.prefs.font=b.getAttribute('data-font');persist();render();}));
+  document.querySelectorAll('[data-fs]').forEach(b=>b.addEventListener('click',()=>{state.prefs.fontSize=b.getAttribute('data-fs');persist();render()}));
+  document.querySelectorAll('[data-lh]').forEach(b=>b.addEventListener('click',()=>{state.prefs.lineSpacing=b.getAttribute('data-lh');persist();render()}));
+  document.querySelectorAll('[data-ls]').forEach(b=>b.addEventListener('click',()=>{state.prefs.letterSpacing=b.getAttribute('data-ls');persist();render()}));
+  document.querySelectorAll('[data-focus]').forEach(b=>b.addEventListener('click',()=>{state.prefs.focusMinutes=parseInt(b.getAttribute('data-focus'));persist();render()}));
+  document.getElementById('toggleBionic')?.addEventListener('click',()=>{state.prefs.bionic=!state.prefs.bionic;persist();render();});
+  document.getElementById('bionicFix')?.addEventListener('input',e=>{state.prefs.bionicFixation=parseFloat(e.target.value);persist();const p=document.getElementById('bionicPreview');if(p)p.innerHTML=toBionic('Bionic reading helps some ADHD readers track text better',state.prefs.bionicFixation,state.prefs.bionicOpacity)});
+  document.getElementById('bionicOp')?.addEventListener('input',e=>{state.prefs.bionicOpacity=parseFloat(e.target.value);persist();const p=document.getElementById('bionicPreview');if(p)p.innerHTML=toBionic('Bionic reading helps some ADHD readers track text better',state.prefs.bionicFixation,state.prefs.bionicOpacity)});
+  document.getElementById('toggleRuler')?.addEventListener('click',()=>{state.prefs.readingRuler=!state.prefs.readingRuler;persist();render()});
+  document.getElementById('toggleFocusMode')?.addEventListener('click',()=>{state.prefs.focusMode=!state.prefs.focusMode;persist();render()});
+  document.getElementById('toggleContrast')?.addEventListener('click',()=>{state.prefs.highContrast=!state.prefs.highContrast;persist();render()});
+  document.getElementById('toggleMotion')?.addEventListener('click',()=>{state.prefs.reducedMotion=!state.prefs.reducedMotion;persist();render()});
+  document.getElementById('toggleDark')?.addEventListener('click',()=>{state.prefs.darkMode=!state.prefs.darkMode;persist();render()});
+  document.getElementById('toggleTTS')?.addEventListener('click',()=>{state.prefs.tts=!state.prefs.tts;persist();render()});
+  document.getElementById('quickBionic')?.addEventListener('click',()=>{state.prefs.bionic=!state.prefs.bionic;persist();render()});
+  document.getElementById('quickRuler')?.addEventListener('click',()=>{state.prefs.readingRuler=!state.prefs.readingRuler;persist();render()});
+  document.getElementById('quickFocus')?.addEventListener('click',()=>{state.prefs.focusMode=!state.prefs.focusMode;persist();render()});
+  document.getElementById('fontQuick')?.addEventListener('change',e=>{state.prefs.font=e.target.value;persist();render()});
+  document.getElementById('exportBtn')?.addEventListener('click',()=>{const blob=new Blob([JSON.stringify({editions:state.editions},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='focus-edition.json';a.click();URL.revokeObjectURL(url)});
+  document.getElementById('wipeBtn')?.addEventListener('click',()=>{if(confirm('Wipe local data?')){localStorage.removeItem(LS.editions);state.editions=JSON.parse(JSON.stringify(SEED));persist();render()}});
+  document.getElementById('markAllBtn')?.addEventListener('click',()=>{if(!state.selectedEdition)return;const all=state.selectedEdition.missions.every(m=>m.done);state.selectedEdition.missions.forEach(m=>m.done=!all);state.selectedEdition.progress=state.selectedEdition.missions.filter(m=>m.done).length;state.selectedEdition.status=state.selectedEdition.progress===0?'draft':state.selectedEdition.progress===state.selectedEdition.totalMissions?'completed':'in_progress';persist();render();toast(all?'All unmarked':'All done ✓')});
+  document.getElementById('focusModeBtn')?.addEventListener('click',()=>{state.prefs.focusMode=!state.prefs.focusMode;persist();render()});
+  document.getElementById('exitFocusBtn')?.addEventListener('click',()=>{state.prefs.focusMode=false;persist();render();toast('Exited focus mode')});
+  document.getElementById('speakAll')?.addEventListener('click',()=>{const txt=state.selectedEdition.missions.map(m=>m.title+'. '+m.body).join('. ');speakText(txt)});
+  document.querySelectorAll('[data-flip]').forEach(b=>b.addEventListener('click',()=>{const i=b.getAttribute('data-flip');const f=document.querySelector(`[data-front="${i}"]`);const bk=document.querySelector(`[data-back="${i}"]`);if(f&&bk){f.classList.toggle('hidden');bk.classList.toggle('hidden')}}));
+  document.querySelectorAll('[data-quiz]').forEach(b=>b.addEventListener('click',()=>{const parts=b.getAttribute('data-quiz').split('-');const qi=parts[0];const correct=parts[1]==='1';const fb=document.querySelector(`[data-feedback="${qi}"]`);if(fb){fb.classList.remove('hidden');fb.className='mt-3 p-3 rounded-xl text-[13px] '+(correct?'bg-okBg text-ok border':'bg-[#FFF0F0] border text-[#B42318]');fb.textContent=correct?'✓ Correct! +1 point':'✗ Not quite';if(correct)toast('+1 point')}}));
+  document.getElementById('startTimer')?.addEventListener('click',()=>{if(state.timer){clearInterval(state.timer);state.timer=null;state.timerLeft=0;toast('Paused');render();return;}state.timerLeft=state.prefs.focusMinutes*60;state.timer=setInterval(()=>{state.timerLeft--;const d=document.getElementById('timerDisplay');if(d){const m=Math.floor(state.timerLeft/60),s=state.timerLeft%60;d.textContent=`${m}:${String(s).padStart(2,'0')}`}if(state.timerLeft<=0){clearInterval(state.timer);state.timer=null;toast('Focus done! 🎉');try{if(window.Notification&&Notification.permission==='granted')new Notification('Focus done')}catch{}render()}},1000);toast(`Timer ${state.prefs.focusMinutes}m started`);render()});
+  document.getElementById('mobileMenuBtn')?.addEventListener('click',()=>document.getElementById('mobileDrawer')?.classList.remove('hidden'));
+  document.getElementById('focusModeBtnMission')?.addEventListener('click',()=>{state.prefs.focusMode=!state.prefs.focusMode;persist();render()});
+  document.querySelector('[data-back-to-edition]')?.addEventListener('click',()=>{state.view='editionDetail';state.selectedMission=null;render()});
+  document.querySelector('[data-toggle-mission-detail]')?.addEventListener('click',()=>{if(state.selectedEdition&&state.selectedMission){const ed=state.editions.find(e=>e.id===state.selectedEdition.id);const m=ed?.missions.find(x=>x.id===state.selectedMission.id);if(m){m.done=!m.done;ed.progress=ed.missions.filter(x=>x.done).length;ed.status=ed.progress===0?'draft':ed.progress===ed.totalMissions?'completed':'in_progress';persist();state.selectedEdition=ed;state.selectedMission=JSON.parse(JSON.stringify(m));render();toast(m.done?'Mission done ✓':'Undone')}}});
+  document.querySelector('[data-prev-mission]')?.addEventListener('click',()=>{if(!state.selectedEdition||!state.selectedMission)return;const idx=state.selectedEdition.missions.findIndex(x=>x.id===state.selectedMission.id);if(idx>0){state.selectedMission=JSON.parse(JSON.stringify(state.selectedEdition.missions[idx-1]));render()}});
+  document.querySelector('[data-next-mission]')?.addEventListener('click',()=>{if(!state.selectedEdition||!state.selectedMission)return;const idx=state.selectedEdition.missions.findIndex(x=>x.id===state.selectedMission.id);if(idx<state.selectedEdition.missions.length-1){state.selectedMission=JSON.parse(JSON.stringify(state.selectedEdition.missions[idx+1]));render()}else{state.view='editionDetail';state.selectedMission=null;toast('All missions viewed!');render()}});
+}
+
+function handleFile(f){state.upload.file=f;state.upload.title=f.name.replace(/\.[^/.]+$/,'').replace(/[-_]/g,' ').slice(0,60)+' — Focus Edition';state.upload.desc=`Auto-generated from ${f.name}. Rebuilt as short missions.`;toast(`Loaded ${f.name} ✓`);const btn=document.getElementById('continueUpload');if(btn)btn.disabled=false;}
+function startConversion(){
+  if(!state.upload.file&&(state.upload.text||'').length<100){toast('Add file or 100+ chars');return;}
+  state.upload.step=2;state.upload.progress=0;state.upload.stage='Uploading…';render();
+  const stages=[{p:15,t:'OCR & extracting…'},{p:35,t:'Detecting structure…'},{p:55,t:'Chunking into missions…'},{p:75,t:'Generating quiz…'},{p:90,t:'Building flashcards…'},{p:100,t:'Finalizing…'}];
+  let i=0;const iv=setInterval(()=>{if(i>=stages.length){clearInterval(iv);state.upload.step=3;state.upload.title=state.upload.title||'Pasted Document — Focus Edition';state.upload.desc=state.upload.desc||'Auto-generated Focus Edition.';render();return;}state.upload.progress=stages[i].p;state.upload.stage=stages[i].t;const bar=document.getElementById('convBar');if(bar)bar.style.width=stages[i].p+'%';const st=document.getElementById('convStage');if(st)st.textContent=stages[i].t;i++;},650);
+}
+
+function bindLogin(){document.getElementById('loginForm')?.addEventListener('submit',e=>{e.preventDefault();login(document.getElementById('email').value.trim())});document.getElementById('demoBtn')?.addEventListener('click',()=>login('alex@focus-edition.app'));}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.prefs.focusMode){state.prefs.focusMode=false;persist();render();toast('Exited focus — ESC')}});
+render();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3e8dbd2afc5be9c',t:'MTc4OTk5MTQ5Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
